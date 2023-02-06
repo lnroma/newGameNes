@@ -4,14 +4,21 @@
   scrollCounter: .res 1
 .segment "CODE"
 
+.proc firstProcRightWalk
+    RTS
+.endproc
+
 .proc heroRightWalk
   LDA heroXCoordinate
   CMP #122
-  BCC incrementScreen
-  INC heroXCoordinate
+  BCS incrementScreen
+  BNE incrementX
   incrementScreen:
     JSR incrementScrollPosition
-  return:
+;    INC scrollPosition
+    RTS
+  incrementX:
+    INC heroXCoordinate
     RTS
 .endproc
 
@@ -21,10 +28,10 @@
     BEQ scrollPositionIncrement
     BNE return
     scrollPositionIncrement:
-        INC scrollPosition
-        JMP return
+    INC scrollPosition
+    JMP return
     return:
-        RTS
+    RTS
 .endproc
 
 .proc drawHeroRightWalk
@@ -52,197 +59,225 @@
 .endproc
 
 .proc drawFrame1
-    lda heroYCoordinate
-    sta $0200
-    lda #$02
-    sta $0201
-    lda #%00010111
-    sta $0202
-    lda heroXCoordinate
-    sta $0203
+    LDA heroYCoordinate
+    STA $0200
+    LDA #$02
+    STA $0201
+    LDA #%00010111
+    STA $0202
+    LDA heroXCoordinate
+    STA $0203
 
-    lda heroYCoordinate
-    adc #8
-    sta $0204
-    lda #$12
-    sta $0205
-    lda #%00010111
-    sta $0206
-    lda heroXCoordinate
-    sta $0207
+    LDA heroYCoordinate
+    ADC #7
+    STA $0204
+    LDA #$12
+    STA $0205
+    LDA #%00010111
+    STA $0206
+    LDA heroXCoordinate
+    STA $0207
 
-    lda heroYCoordinate
-    adc #16
-    sta $0208
-    lda #$22
-    sta $0209
-    lda #%00010111
-    sta $020A
-    lda heroXCoordinate
-    sta $020B
+    LDA heroYCoordinate
+    ADC #16
+    STA $0208
+    LDA #$22
+    STA $0209
+    LDA #%00010111
+    STA $020A
+    LDA heroXCoordinate
+    STA $020B
 
-    lda heroYCoordinate
-    sta $020C
-    lda #$03
-    sta $020D
-    lda #%00010111
-    sta $020E
-    lda heroXCoordinate
-    adc #8
-    sta $020F
+    LDA heroYCoordinate
+    STA $020C
+    LDA #$03
+    STA $020D
+    LDA #%00010111
+    STA $020E
+    LDA heroXCoordinate
+    ADC #8
+    STA $020F
 
-    lda heroYCoordinate
-    adc #8
-    sta $0210
-    lda #$13
-    sta $0211
-    lda #%00010111
-    sta $0212
-    lda heroXCoordinate
-    adc #8
-    sta $0213
+    LDA heroYCoordinate
+    ADC #8
+    STA $0210
+    LDA #$13
+    STA $0211
+    LDA #%00010111
+    STA $0212
+    LDA heroXCoordinate
+    ADC #8
+    STA $0213
 
-    lda heroYCoordinate
-    adc #16
-    sta $0214
-    lda #$23
-    sta $0215
-    lda #%00010111
-    sta $0216
-    lda heroXCoordinate
-    adc #8
-    sta $0217
+    LDA heroYCoordinate
+    ADC #16
+    STA $0214
+    LDA #$23
+    STA $0215
+    LDA #%00010111
+    STA $0216
+    LDA heroXCoordinate
+    ADC #8
+    STA $0217
+
+    LDA heroYCoordinate
+    STA $0218
+    LDA #$04
+    STA $0219
+    LDA #%00010110
+    STA $021A
+    LDA heroXCoordinate
+    ADC #6
+    STA $021B
 
     rts
 .endproc
 
 .proc drawFrame2
-    lda heroYCoordinate
-        sta $0200
-        lda #$02
-        sta $0201
-        lda #%00010111
-        sta $0202
-        lda heroXCoordinate
-        sta $0203
+    LDA heroYCoordinate
+    STA $0200
+    LDA #$02
+    STA $0201
+    LDA #%00010111
+    STA $0202
+    LDA heroXCoordinate
+    STA $0203
 
-        lda heroYCoordinate
-        adc #8
-        sta $0204
-        lda #$14
-        sta $0205
-        lda #%00010111
-        sta $0206
-        lda heroXCoordinate
-        sta $0207
+    LDA heroYCoordinate
+    ADC #7
+    STA $0204
+    LDA #$14
+    STA $0205
+    LDA #%00010111
+    STA $0206
+    LDA heroXCoordinate
+    STA $0207
 
-        lda heroYCoordinate
-        adc #16
-        sta $0208
-        lda #$24
-        sta $0209
-        lda #%00010111
-        sta $020A
-        lda heroXCoordinate
-        sta $020B
+    LDA heroYCoordinate
+    ADC #16
+    STA $0208
+    LDA #$24
+    STA $0209
+    LDA #%00010111
+    STA $020A
+    LDA heroXCoordinate
+    STA $020B
 
-        lda heroYCoordinate
-        sta $020C
-        lda #$03
-        sta $020D
-        lda #%00010111
-        sta $020E
-        lda heroXCoordinate
-        adc #8
-        sta $020F
+    LDA heroYCoordinate
+    STA $020C
+    LDA #$03
+    STA $020D
+    LDA #%00010111
+    STA $020E
+    LDA heroXCoordinate
+    ADC #8
+    STA $020F
 
-        lda heroYCoordinate
-        adc #8
-        sta $0210
-        lda #$15
-        sta $0211
-        lda #%00010111
-        sta $0212
-        lda heroXCoordinate
-        adc #8
-        sta $0213
+    LDA heroYCoordinate
+    ADC #8
+    STA $0210
+    LDA #$15
+    STA $0211
+    LDA #%00010111
+    STA $0212
+    LDA heroXCoordinate
+    ADC #8
+    STA $0213
 
-        lda heroYCoordinate
-        adc #16
-        sta $0214
-        lda #$25
-        sta $0215
-        lda #%00010111
-        sta $0216
-        lda heroXCoordinate
-        adc #8
-        sta $0217
+    LDA heroYCoordinate
+    ADC #16
+    STA $0214
+    LDA #$25
+    STA $0215
+    LDA #%00010111
+    STA $0216
+    LDA heroXCoordinate
+    ADC #8
+    STA $0217
 
-        rts
+    LDA heroYCoordinate
+    STA $0218
+    LDA #$04
+    STA $0219
+    LDA #%00010110
+    STA $021A
+    LDA heroXCoordinate
+    ADC #6
+    STA $021B
+    rts
 .endproc
 
 .proc drawFrame3
-lda heroYCoordinate
-        sta $0200
-        lda #$02
-        sta $0201
-        lda #%00010111
-        sta $0202
-        lda heroXCoordinate
-        sta $0203
+    LDA heroYCoordinate
+    STA $0200
+    LDA #$02
+    STA $0201
+    LDA #%00010111
+    STA $0202
+    LDA heroXCoordinate
+    STA $0203
 
-        lda heroYCoordinate
-        adc #8
-        sta $0204
-        lda #$16
-        sta $0205
-        lda #%00010111
-        sta $0206
-        lda heroXCoordinate
-        sta $0207
+    LDA heroYCoordinate
+    ADC #7
+    STA $0204
+    LDA #$16
+    STA $0205
+    LDA #%00010111
+    STA $0206
+    LDA heroXCoordinate
+    STA $0207
 
-        lda heroYCoordinate
-        adc #16
-        sta $0208
-        lda #$26
-        sta $0209
-        lda #%00010111
-        sta $020A
-        lda heroXCoordinate
-        sta $020B
+    LDA heroYCoordinate
+    ADC #16
+    STA $0208
+    LDA #$26
+    STA $0209
+    LDA #%00010111
+    STA $020A
+    LDA heroXCoordinate
+    STA $020B
 
-        lda heroYCoordinate
-        sta $020C
-        lda #$03
-        sta $020D
-        lda #%00010111
-        sta $020E
-        lda heroXCoordinate
-        adc #8
-        sta $020F
+    LDA heroYCoordinate
+    STA $020C
+    LDA #$03
+    STA $020D
+    LDA #%00010111
+    STA $020E
+    LDA heroXCoordinate
+    ADC #8
+    STA $020F
 
-        lda heroYCoordinate
-        adc #8
-        sta $0210
-        lda #$17
-        sta $0211
-        lda #%00010111
-        sta $0212
-        lda heroXCoordinate
-        adc #8
-        sta $0213
+    LDA heroYCoordinate
+    ADC #8
+    STA $0210
+    LDA #$17
+    STA $0211
+    LDA #%00010111
+    STA $0212
+    LDA heroXCoordinate
+    ADC #8
+    STA $0213
 
-        lda heroYCoordinate
-        adc #16
-        sta $0214
-        lda #$27
-        sta $0215
-        lda #%00010111
-        sta $0216
-        lda heroXCoordinate
-        adc #8
-        sta $0217
+    LDA heroYCoordinate
+    ADC #16
+    STA $0214
+    LDA #$27
+    STA $0215
+    LDA #%00010111
+    STA $0216
+    LDA heroXCoordinate
+    ADC #8
+    STA $0217
 
+    LDA heroYCoordinate
+    STA $0218
+    LDA #$04
+    STA $0219
+    LDA #%00010110
+    STA $021A
+    LDA heroXCoordinate
+    ADC #6
+    STA $021B
     rts
 .endproc
 

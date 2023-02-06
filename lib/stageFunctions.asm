@@ -1,3 +1,4 @@
+
 .segment "CODE"
 
 .proc setStageVar

@@ -28,11 +28,13 @@
 
     continue:
     LDA jumpHeight
-    CMP #$46
+    CMP #$20
     BEQ return
     BNE decrementY
 
     decrementY:
+        DEC heroYCoordinate
+        DEC heroYCoordinate
         DEC heroYCoordinate
         DEC heroYCoordinate
         INC jumpHeight
@@ -142,9 +144,10 @@
       sta $0208
       lda #$18
       sta $0209
-      lda #%00010111
+      lda #%01010111
       sta $020A
       lda heroXCoordinate
+      adc #8
       sta $020B
 
       lda heroYCoordinate
@@ -152,9 +155,10 @@
       sta $020C
       lda #$28
       sta $020D
-      lda #%00010111
+      lda #%01010111
       sta $020E
       lda heroXCoordinate
+      adc #8
       sta $020F
 
       lda heroYCoordinate
@@ -171,10 +175,9 @@
       sta $0214
       lda #$19
       sta $0215
-      lda #%00010111
+      lda #%01010111
       sta $0216
       lda heroXCoordinate
-      adc #8
       sta $0217
 
       lda heroYCoordinate
@@ -182,10 +185,9 @@
       sta $0218
       lda #$29
       sta $0219
-      lda #%00010111
+      lda #%01010111
       sta $021A
       lda heroXCoordinate
-      adc #8
       sta $021B
 
       RTS

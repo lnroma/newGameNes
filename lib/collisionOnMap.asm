@@ -1,3 +1,5 @@
+.segment "ZEROPAGE"
+   isGravity: .res 1
 .segment "RODATA"
 
 bit_mask:
@@ -144,17 +146,28 @@ map_level_1_collision_map_1:
     STA mapByteOffset
     LDA mapByteOffset
     AND bit_mask, x
-    BEQ collideObjectVerticalyNo
-    BNE collideObjectVerticalyYes
+    BEQ checkIsJump
+    BNE return
 
-collideObjectVerticalyYes:
-   RTS
+checkIsJump:
+;   LDA isJump
+;   CMP #01
+;   BEQ return
+;   BNE collideObjectVerticalyNo
 
 collideObjectVerticalyNo:
+   LDA #01
+   STA isGravity
    inc heroYCoordinate
-   inc heroYCoordinate
-   inc heroYCoordinate
-
+   INC heroYCoordinate
+   RTS
+;   inc heroYCoordinate
+;   inc heroYCoordinate
+return:
+   LDA #00
+   STA isGravity
+   STA jumpHeight
+   STA isJump
    RTS
 
 .endproc

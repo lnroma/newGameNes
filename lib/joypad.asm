@@ -32,32 +32,3 @@
     RTS
 .endproc
 
-.proc handleJoyState
-	handleJoyState:
-    LDX joyState
-    CPX #%10000000 ; right
-    BEQ walkHeroRight
-    CPX #%01000000 ; left
-    BEQ walkHeroLeft
-    CPX #%00100000 ;down
-    BEQ walkHeroDown
-    CPX #%00010000
-    BEQ walkHeroUp
-    CPX #%00001000
-    BEQ startButton
-    CPX #%00000100
-    BEQ selectButton
-    CPX #%00000010
-    BEQ heroFire
-    CPX #%00000001
-    BEQ heroJump
-    CPX #%10100000 ; down and right
-    BEQ walkHeroDownAndRight
-    CPX #%01100000 ; down and left
-    BEQ walkHeroDownAndLeft
-    CPX #%00000011
-    BEQ walkHeroRightAndUp
-    BNE drawHeroStay
-
-    RTS
-.endproc

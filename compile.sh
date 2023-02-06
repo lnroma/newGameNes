@@ -1,3 +1,3 @@
 #!/bin/bash
-ca65 test_background.asm -o test.o && ld65 test.o -C nesfile.ini -o test_background.nes
+ca65 newGame.asm -o newGame.o && ld65 newGame.o -C nesfile.ini -o newGame.nes
 
