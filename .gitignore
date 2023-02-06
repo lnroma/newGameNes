@@ -1,0 +1,6 @@
+.idea/
+newGame.o/
+newGame.dbg/
+test.o/
+test_background.dbg/
+test_background.nes/
