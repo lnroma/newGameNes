@@ -1,7 +1,7 @@
 .segment "RODATA"
 	palette_data:
   		.byt $09,$0A,$0C,$0D,  $21,$0C,$08,$28,  $21,$1C,$29,$07,  $31,$3F,$3c,$02   ;;background
-  		.byt $32,$29,$1A,$0F,  $32,$36,$17,$0F,  $32,$30,$21,$0F,  $32,$27,$17,$0F   ;;sprite palette
+  		.byt $32,$10,$1A,$0F,  $32,$36,$17,$0F,  $32,$30,$21,$0F,  $32,$27,$17,$0F   ;;sprite palette
 
 .segment "CODE"
 

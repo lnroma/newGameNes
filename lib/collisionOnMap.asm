@@ -1,5 +1,10 @@
 .segment "ZEROPAGE"
    isGravity: .res 1
+   xOffset: .res 1
+   nameTableLowByte: .res 1
+   nameTableHighByte: .res 1
+   collisionTmp: .res 1
+   currentAdc: .res 1
 .segment "RODATA"
 
 bit_mask:
@@ -91,7 +96,121 @@ map_level_1_collision_map_1:
     RTS
 .endproc
 
+.proc calculateNametable
+    LDA nameTable
+    CMP #01
+    BNE loadOne
+    BEQ loadTwo
+
+    loadTwo:
+        LDA #$24
+        STA currentAdc
+
+        RTS
+    loadOne:
+        LDA #$20
+        STA currentAdc
+
+        RTS
+.endproc
+
 .proc collisionOnMap
+; x  = 9 ; y = 15 ; address 21ED
+    ; low byt in nametable
+        JSR calculateNametable
+        LDA heroYCoordinate
+        CLC
+        ADC #24
+        LSR
+        LSR
+        LSR
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC currentAdc
+        TAX
+;
+;       lda heroYCoordinate
+;       lsr
+;       lsr
+;       lsr
+;       sta collisionTmp
+       lda scrollPosition
+       lsr
+       lsr
+       lsr
+       sta collisionTmp
+    ; calculate low byte
+       lda heroXCoordinate
+       lsr
+       lsr
+       lsr
+       clc
+       adc collisionTmp
+       sta collisionTmp
+       ; x / 8
+
+       ; high byt in nametable
+       LDA heroYCoordinate
+       CLC
+       ADC #24
+       lsr
+       lsr
+       lsr
+       AND #7
+       asl
+       asl
+       asl
+       asl
+       asl
+       clc
+       adc collisionTmp
+       tay
+
+      LDA $2005
+      STX $2006
+      STY $2006
+      LDA $2007
+    ; check sprite in coordinate
+    CMP #$00
+    BEQ collideObjectYes
+    CMP #$23
+    BEQ collideObjectYes
+    CMP #$29
+    BEQ collideObjectYes
+    CMP #$2A
+    BEQ collideObjectYes
+    BNE collideObjectNo
+
+    collideObjectNo:
+        JSR collideNo
+
+        RTS
+    collideObjectYes:
+        JSR collideYes
+
+        RTS
+
+.endproc
+
+.proc collideNo
+    LDA #01
+    STA isGravity
+    inc heroYCoordinate
+    INC heroYCoordinate
+    RTS
+.endproc
+
+.proc collideYes
+    LDA #00
+    STA isGravity
+    STA jumpHeight
+    STA isJump
+    RTS
+.endproc
+
+.proc collisionOnMapBack
     JSR calculateCollisionMap
     LDA offsetColumn
     ASL 
@@ -146,14 +265,8 @@ map_level_1_collision_map_1:
     STA mapByteOffset
     LDA mapByteOffset
     AND bit_mask, x
-    BEQ checkIsJump
+    BEQ collideObjectVerticalyNo
     BNE return
-
-checkIsJump:
-;   LDA isJump
-;   CMP #01
-;   BEQ return
-;   BNE collideObjectVerticalyNo
 
 collideObjectVerticalyNo:
    LDA #01

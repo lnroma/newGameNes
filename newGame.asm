@@ -9,7 +9,8 @@
 .include "./lib/collisionOnMap.asm"
 .include "./lib/joypad.asm"
 .include "./lib/apu.asm"
-.include "./lib/stageOne.asm"
+.include "./lib/stages/stageOne.asm"
+.include "./lib/stages/stageTwo.asm"
 .include "./lib/palete.asm"
 .include "./lib/reset.asm"
 .include "./lib/stageFunctions.asm"
@@ -78,6 +79,8 @@
 
     scroolCounter: .res 1;
 
+    stageStates: .res 1;
+
 
 .segment "BSS"
 
@@ -102,11 +105,12 @@
 
 .proc nmi_isr
      JSR incScrollCounter
-     JSR clearMemory
+;     JSR clearMemory
      JSR readJoyPad
      JSR readJoyState
      JSR heroStateMovement
-     JSR screenFactory
+     ;JSR screenFactory
+     JSR screenFactoryTwo
      JSR swapNametable
      JSR drawNewAttribute
      JSR drawNewCollumn
@@ -131,10 +135,13 @@
     TXS     ; Стэк равен = $FF
     : BIT $2002
     BPL :-
-
     JSR setHeroVar
-    JSR loadPalete
+;    JSR loadPalete
     JSR setStageVar
+    ; load first stage display
+    JSR loadStageTwoBackground
+    JSR loadPaleteStageTwo
+
     JSR loadBackground
     JSR loadAttributePages
     JSR fixScroll
@@ -155,7 +162,7 @@ mainLoop:
 
 .segment "PATTERN0"
 
-	.incbin "newGame.chr"
+	.incbin "test.chr"
 
 .segment "PATTERN1"
 
