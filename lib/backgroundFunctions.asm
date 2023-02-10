@@ -148,16 +148,16 @@ RTS
 .proc drawNewCollumnNametable
   
 DrawNewColumn:
-    LDA scrollPosition
+    LDA scrollPosition ; позиция скрола
+    LSR A ; смещение право
     LSR A
-    LSR A
-    LSR A
+    LSR A ; / 8
     STA colLow
     STA columnNumber
 
     LDA nameTable
     ASL A
-    ASL A
+    ASL A ; * 4
     CLC
     ADC #$24
     STA colHig
@@ -203,7 +203,7 @@ DrawColumnLoop:
     BNE DrawColumnLoop
 
     LDA #%10010000
-    EOR nameTable
+    EOR nameTable ; 01 00
     STA $2000
 
     RTS

@@ -16,12 +16,12 @@
 .include "./lib/stageFunctions.asm"
 .include "./lib/backgroundFunctions.asm"
 
-.segment "INESHDR"
+.segment "HEADER"
 	.byt "NES",$1A
 	.byt 1 				; 1 x 16kB PRG block.
 	.byt 1 				; 1 x 8kB CHR block.
-	.byt 1
-	.byt 1
+	.byt 1              ; 0 horizontal, 1 vertical mirror
+	.byt 1              ; mapper
 
 .segment "VECTORS"
 	.addr nmi_isr, reset, irq_isr
@@ -108,6 +108,7 @@
 ;     JSR clearMemory
      JSR readJoyPad
      JSR readJoyState
+     JSR playerHundler
      JSR heroStateMovement
      ;JSR screenFactory
      JSR screenFactoryTwo
@@ -117,7 +118,6 @@
      JSR collisionOnMap
      JSR scrolling
      JSR changeSpriteBuffer
-
      RTI
 .endproc
 
@@ -160,9 +160,7 @@ mainLoop:
 
 ; ----- Pattern Table 0 --------------------------------------------------------
 
-.segment "PATTERN0"
+.segment "CHR"
 
 	.incbin "test.chr"
-
-.segment "PATTERN1"
 

@@ -3,6 +3,7 @@
     isHeroWalk: .res 1
     isHeroFire: .res 1
     isHeroStay: .res 1
+    lastPositionY: .res 1
 
 .segment "RODATA"
   lifesBytes: 
@@ -20,8 +21,10 @@
   lda #$00
   sta buttons
   sta offsetColumn
-  lda #10
+  lda #50
   sta heroYCoordinate
+  lda #250
+  sta lastPositionY
   lda #04
   sta lifes
   lda #01
@@ -30,9 +33,12 @@
   sta frameCountPlayerRightWalk
   lda #00
   sta jumpHeight
-  sta isGravity
 
   rts
+.endproc
+
+.proc playerHundler
+   JSR checkCollide
 .endproc
 
 .proc fixScroll
@@ -73,6 +79,37 @@
   RTS
 .endproc
 
+.proc playerGravity
+    LDA collideFlag
+    CMP #00
+    BNE return
+
+    LDA #01
+    STA isGravity
+    inc heroYCoordinate
+    INC heroYCoordinate
+    LDA #00
+    STA collideDetection
+return:
+    RTS
+.endproc
+
+.proc checkCollide
+    LDA lastPositionY
+    CMP heroYCoordinate
+    BNE incrementY
+    BEQ continue
+    incrementY:
+      JSR playerGravity
+      RTS
+    continue:
+      LDA #00
+      STA isGravity
+      STA jumpHeight
+      STA isJump
+      RTS
+.endproc
+
 .proc readJoyState
    JSR unsetHeroFire
    JSR unsetHeroStay
@@ -82,6 +119,10 @@
    BEQ heroWalkLeft
    CPX #%10000000
    BEQ heroWalkRight
+   CPX #%00100000
+   BEQ walkDown
+   CPX #%00010000
+   BEQ walkUp
    CPX #%00000010
    BEQ heroJump
    CPX #%10000010
@@ -106,6 +147,12 @@
         JSR setHeroLeft
         JSR heroLeftWalk
         JSR setHeroWalk
+        JMP return
+   walkDown:
+        JSR walkDownProcedure
+        JMP return
+   walkUp:
+        JSR walkUpProcedure
         JMP return
    walkAndJumpRight:
         JSR setIsJump
@@ -148,6 +195,48 @@
 
    return:
      RTS
+.endproc
+
+.proc heroDownWalk
+    LDA collideFlag
+    CMP #3
+    BEQ incrementY
+    BNE return
+    incrementY:
+        INC heroYCoordinate
+        LDA heroYCoordinate
+        STA lastPositionY
+    return:
+        RTS
+.endproc
+
+.proc heroUpWalk
+    LDA collideDetection
+    CMP #01
+    BEQ decrementY
+    BNE return
+    decrementY:
+        DEC heroYCoordinate
+        LDA heroYCoordinate
+        STA lastPositionY
+    return:
+        RTS
+.endproc
+
+.proc walkDownProcedure
+    JSR setHeroLeft
+    JSR heroDownWalk
+    JSR setHeroWalk
+
+    RTS
+.endproc
+
+.proc walkUpProcedure
+    JSR setHeroLeft
+    JSR heroUpWalk
+    JSR setHeroWalk
+
+    RTS
 .endproc
 
 .proc heroStateMovement
