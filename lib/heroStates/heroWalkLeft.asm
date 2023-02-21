@@ -7,6 +7,19 @@
 .endproc
 
 .proc heroLeftWalk
+    LDA heroYCoordinate
+    STA collideY
+
+    LDA heroXCoordinate
+    CLC
+    SBC #1
+    STA collideX
+
+    JSR collisionOnMap
+    LDA collideFlag
+    CMP #%00000011
+    BEQ decrementXCoordinate
+    BNE return
 ; todo dorabotat' esli geroy v levo idet do ekrana
 ;  LDA scrollPosition
 ;  CMP heroXCoordinate
@@ -15,8 +28,10 @@
 ;  stopDecrement:
 ;    RTS
 ;  decrementX:
-    DEC heroXCoordinate
-    RTS
+    decrementXCoordinate:
+        DEC heroXCoordinate
+    return:
+        RTS
   ; todo check left screen border
 .endproc
 
@@ -52,7 +67,7 @@
     LDA #%01010111
     STA $0202
     LDA heroXCoordinate
-    ADC #8
+    ADC #7
     STA $0203
 
     LDA heroYCoordinate
@@ -110,7 +125,7 @@
     STA $0218
     LDA #$04
     STA $0219
-    LDA #%00010110
+    LDA #%01010110
     STA $021A
     LDA heroXCoordinate
     STA $021B
@@ -183,7 +198,7 @@
     STA $0218
     LDA #$04
     STA $0219
-    LDA #%00010110
+    LDA #%01010110
     STA $021A
     LDA heroXCoordinate
     STA $021B
@@ -257,7 +272,7 @@ LDA heroYCoordinate
     STA $0218
     LDA #$04
     STA $0219
-    LDA #%00010110
+    LDA #%01010110
     STA $021A
     LDA heroXCoordinate
     STA $021B

@@ -1,9 +1,4 @@
 .segment "ZEROPAGE"
-    heroDirection: .res 1 ; 01 left 02 right
-    isHeroWalk: .res 1
-    isHeroFire: .res 1
-    isHeroStay: .res 1
-    lastPositionY: .res 1
 
 .segment "RODATA"
   lifesBytes: 
@@ -21,9 +16,8 @@
   lda #$00
   sta buttons
   sta offsetColumn
-  lda #50
+  lda #200
   sta heroYCoordinate
-  lda #250
   sta lastPositionY
   lda #04
   sta lifes
@@ -39,6 +33,7 @@
 
 .proc playerHundler
    JSR checkCollide
+   RTS
 .endproc
 
 .proc fixScroll
@@ -60,7 +55,6 @@
   RTS
 .endproc
 
-
 .proc drawLifes
   LDX lifes
   lifeLoop:
@@ -80,16 +74,15 @@
 .endproc
 
 .proc playerGravity
+RTS
+    JSR collisionOnMap
     LDA collideFlag
-    CMP #00
-    BNE return
-
-    LDA #01
-    STA isGravity
-    inc heroYCoordinate
+    CMP #%00000011
+    BNE incy
+    BEQ return
+incy:
     INC heroYCoordinate
-    LDA #00
-    STA collideDetection
+    INC heroYCoordinate
 return:
     RTS
 .endproc
@@ -100,7 +93,8 @@ return:
     BNE incrementY
     BEQ continue
     incrementY:
-      JSR playerGravity
+      ;JSR playerGravity
+;      INC heroYCoordinate
       RTS
     continue:
       LDA #00
@@ -113,16 +107,14 @@ return:
 .proc readJoyState
    JSR unsetHeroFire
    JSR unsetHeroStay
+   JSR unsetHeroWalk
 
    LDX joyState
-   CPX #%01000000
-   BEQ heroWalkLeft
-   CPX #%10000000
-   BEQ heroWalkRight
-   CPX #%00100000
-   BEQ walkDown
-   CPX #%00010000
-   BEQ walkUp
+   JSR handleDirections
+   RTS
+.endproc
+
+.proc handleFireAndJump
    CPX #%00000010
    BEQ heroJump
    CPX #%10000010
@@ -133,73 +125,178 @@ return:
    BEQ walkAndFireLeft
    CPX #%01000010
    BEQ walkAndJumpLeft
-   BNE heroStay
+
+   JSR setHeroStay
+   RTS
 
    heroJump:
         JSR setIsJump
-        JMP return
-   heroWalkRight:
-        JSR heroRightWalk
-        JSR setHeroRight
-        JSR setHeroWalk
-        JMP return
-   heroWalkLeft:
-        JSR setHeroLeft
-        JSR heroLeftWalk
-        JSR setHeroWalk
-        JMP return
-   walkDown:
-        JSR walkDownProcedure
-        JMP return
-   walkUp:
-        JSR walkUpProcedure
-        JMP return
+        RTS
+
    walkAndJumpRight:
         JSR setIsJump
         JSR heroRightWalk
         JSR setHeroRight
-        JMP return
+        RTS
    walkAndJumpLeft:
         JSR setIsJump
         JSR heroLeftWalk
         JSR setHeroLeft
-        JMP return
+        RTS
    walkAndFireRight:
-        JSR setIsFire
-        JSR heroRightWalk
-        JSR setHeroRight
-        JMP return
+        JSR walkAndFireRightProc
+        RTS
    walkAndFireLeft:
         JSR setIsFire
         JSR heroLeftWalk
         JSR setHeroLeft
-        JMP return
+        RTS
    walkAndJumpAndFireRight:
-        JSR setIsFire
-        JSR heroRightWalk
-        JSR setHeroRight
-        JSR setIsJump
-        JMP return
+        JSR jumpAndFire
+        RTS
    walkAndJumpAndFireLeft:
-        JSR setIsFire
-        JSR heroLeftWalk
-        JSR setHeroLeft
-        JSR setIsJump
-        JMP return
+        JSR walkAndFireProc
+        RTS
    heroFire:
         JSR setIsFire
-        JMP return
-   heroStay:
-        JSR setHeroStay
-        JMP return
+        RTS
+.endproc
 
-   return:
-     RTS
+.proc handleDirections
+    CPX #%01000000
+    BEQ heroWalkLeft
+    CPX #%01100000
+    BEQ heroWalkLeftAndDown
+    CPX #%10100000
+    BEQ heroWalkRightAndDown
+    CPX #%01010000
+    BEQ heroWalkLeftAndUp
+    CPX #%10010000
+    BEQ heroWalkRightAndUp
+    CPX #%10000000
+    BEQ heroWalkRight
+    CPX #%00100000
+    BEQ walkDown
+    CPX #%00010000
+    BEQ walkUp
+
+    JSR handleFireAndJump
+    RTS
+
+    heroWalkLeftAndUp:
+        JSR heroWalkLeftAndUpProcedure
+        RTS
+    heroWalkLeftAndDown:
+        JSR heroWalkLeftAndDownProcedure
+        RTS
+    heroWalkRightAndDown:
+        JSR heroWalkRightAndDownProcedure
+        RTS
+    heroWalkRightAndUp:
+        JSR heroWalkRightAndUpProcedure
+        RTS
+    heroWalkRight:
+        JSR heroWalkRightProc
+        RTS
+    heroWalkLeft:
+        JSR heroWalkLeftProc
+        RTS
+    walkDown:
+        JSR walkDownProcedure
+        RTS
+    walkUp:
+        JSR walkUpProcedure
+        RTS
+.endproc
+
+.proc heroWalkLeftProc
+    JSR setHeroLeft
+    JSR setHeroWalk
+    JSR heroLeftWalk
+
+    RTS
+.endproc
+
+.proc walkAndFireRightProc
+    JSR setIsFire
+    JSR heroRightWalk
+    JSR setHeroRight
+
+    RTS
+.endproc
+
+.proc heroWalkRightProc
+    JSR heroRightWalk
+    JSR setHeroRight
+    JSR setHeroWalk
+
+    RTS
+.endproc
+
+.proc jumpAndFire
+    JSR setIsFire
+    JSR heroRightWalk
+    JSR setHeroRight
+    JSR setIsJump
+
+    RTS
+.endproc
+
+.proc walkAndFireProc
+    JSR setIsFire
+    JSR heroLeftWalk
+    JSR setHeroLeft
+    JSR setIsJump
+
+    RTS
+.endproc
+
+.proc heroWalkRightAndDownProcedure
+    JSR setHeroRight
+    JSR heroRightWalk
+    JSR setHeroWalk
+    JSR walkDownProcedure
+
+    RTS
+.endproc
+
+.proc heroWalkLeftAndDownProcedure
+    JSR setHeroLeft
+    JSR heroLeftWalk
+    JSR setHeroWalk
+    JSR walkDownProcedure
+
+    RTS
+.endproc
+
+.proc heroWalkLeftAndUpProcedure
+    JSR heroLeftWalk
+    JSR walkUpProcedure
+
+    RTS
+.endproc
+
+.proc heroWalkRightAndUpProcedure
+    JSR setHeroRight
+    JSR heroRightWalk
+    JSR setHeroWalk
+    JSR walkUpProcedure
+
+    RTS
 .endproc
 
 .proc heroDownWalk
+    LDA heroYCoordinate
+    CLC
+    ADC #1
+    STA collideY
+
+    LDA heroXCoordinate
+    STA collideX
+
+    JSR collisionOnMap
     LDA collideFlag
-    CMP #3
+    CMP #%00000011
     BEQ incrementY
     BNE return
     incrementY:
@@ -211,10 +308,20 @@ return:
 .endproc
 
 .proc heroUpWalk
-    LDA collideDetection
-    CMP #01
+    LDA heroYCoordinate
+    CLC
+    SBC #1
+    STA collideY
+
+    LDA heroXCoordinate
+    STA collideX
+
+    JSR collisionOnMap
+    LDA collideFlag
+    CMP #%00000011
     BEQ decrementY
     BNE return
+
     decrementY:
         DEC heroYCoordinate
         LDA heroYCoordinate
@@ -224,19 +331,41 @@ return:
 .endproc
 
 .proc walkDownProcedure
-    JSR setHeroLeft
-    JSR heroDownWalk
-    JSR setHeroWalk
+    LDA heroDirection
+    CMP #01
+    BEQ heroLeft
+    BNE heroRight
 
-    RTS
+    heroLeft:
+        JSR setHeroLeft
+        JMP setHero
+    heroRight:
+        JSR setHeroRight
+
+    setHero:
+        JSR heroDownWalk
+        JSR setHeroWalk
+
+        RTS
 .endproc
 
 .proc walkUpProcedure
-    JSR setHeroLeft
-    JSR heroUpWalk
-    JSR setHeroWalk
+    LDA heroDirection
+    CMP #01
+    BEQ heroLeft
+    BNE heroRight
 
-    RTS
+    heroLeft:
+        JSR setHeroLeft
+        JMP setHero
+    heroRight:
+        JSR setHeroRight
+
+    setHero:
+        JSR heroUpWalk
+        JSR setHeroWalk
+
+        RTS
 .endproc
 
 .proc heroStateMovement
@@ -257,6 +386,7 @@ return:
     LDA isHeroWalk
     CMP #01
     BEQ checkFlagJump
+;    BEQ walkWithOutFire
     BNE return
 
     checkFlagJump:
@@ -358,6 +488,12 @@ return:
 
 .proc setHeroWalk
     LDA #01
+    STA isHeroWalk
+    RTS
+.endproc
+
+.proc unsetHeroWalk
+    LDA #00
     STA isHeroWalk
     RTS
 .endproc

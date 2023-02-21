@@ -9,7 +9,14 @@
    fakeXCoordinate: .res 1
    collideDetection: .res 1 ; remove in to be
 
+   collideX: .res 1
+   collideY: .res 1
    collideFlag: .res 1
+
+   collisionFirstLB: .res 1
+   collisionSecondLB: .res 1
+
+   collisionPart: .res 1
 
 .segment "RODATA"
 
@@ -24,44 +31,45 @@ bit_mask:
   .byt %00000001
 
 map_level_1_collision_map_1_first:
-  .byt %00000000, %00000000, %00111111, %11111000 ; 1 левая часть экрана
-  .byt %00000000, %00000000, %00111111, %11111000 ; 2
-  .byt %00000000, %00000000, %00111111, %11111000 ; 3
-  .byt %00000000, %00000000, %00111111, %11111000 ; 5
-  .byt %00000000, %00000000, %00111111, %11111000 ; 6
-  .byt %00000000, %00000000, %00111111, %11111000 ; 7
-  .byt %00000000, %00000000, %00111111, %11111000 ; 8
-  .byt %00000000, %00000000, %00111111, %11111000 ; 9
-  .byt %00000000, %00000000, %00111111, %11111000 ; 10
-  .byt %00000000, %00000000, %00111111, %11111000 ; 11
-  .byt %00000000, %00000000, %00111111, %11111000 ; 12
-  .byt %00000000, %00000000, %00111111, %11111000 ; 13
+  .byt %00000000, %00000011, %11111111, %11111000 ; 1 левая часть экрана
+  .byt %00000000, %00000011, %11111111, %11111000 ; 2
+  .byt %00000000, %00000011, %11111111, %11111000 ; 3
+  .byt %00000000, %00000011, %11111111, %11111000 ; 5
+  .byt %00000000, %00000011, %11111111, %11111000 ; 6
+  .byt %00000000, %00000011, %11111111, %11111000 ; 7
+  .byt %00000000, %00000011, %11111111, %11111000 ; 8
+  .byt %00000000, %00000011, %11111111, %11111000 ; 9
+  .byt %00000000, %00000011, %11111111, %11111000 ; 10
+  .byt %00000000, %00000001, %11111111, %11111000 ; 11
+  .byt %00000000, %00000000, %11111111, %11111000 ; 12
+  .byt %00000000, %00000000, %01111111, %11111000 ; 13
   .byt %00000000, %00000000, %00111111, %11111000 ; 13
   .byt %00000000, %00000000, %00111111, %11111000 ; 14
-  .byt %00000000, %00000000, %00111111, %11111000 ; 15
-  .byt %00000000, %00000000, %00111111, %11111000 ; 16
-  .byt %00000000, %00000000, %00111111, %11111000 ; 17
-  .byt %00000000, %00000000, %00111111, %11111000 ; 18
-  .byt %00000000, %00000000, %00111111, %11111000 ; 19
-  .byt %00000000, %00000000, %00111111, %11111000 ; 20
-  .byt %00000000, %00000000, %00111111, %11111000 ; 21
-  .byt %00000000, %00000000, %00111111, %11111000 ; 22
-  .byt %00000000, %00000000, %00111111, %11111000 ; 23
-  .byt %00000000, %00000000, %00111111, %11111000 ; 24
-  .byt %00000000, %00000000, %00111111, %11111000 ; 25
-  .byt %00000000, %00000000, %00111111, %11111000 ; 26
+  .byt %00000000, %00000000, %01111111, %11100000 ; 15
+  .byt %00000000, %00000000, %11111111, %11111000 ; 16
+  .byt %00000000, %00000001, %11111111, %11111000 ; 17
+  .byt %00000000, %00000011, %11111111, %11111000 ; 18
+  .byt %00000000, %00000011, %11111111, %11111000 ; 19
+  .byt %00000000, %00000011, %00111111, %11111000 ; 20
+  .byt %00000000, %00000011, %00111111, %11111000 ; 21
+  .byt %00000000, %00000011, %00111111, %11111000 ; 22
+  .byt %00000000, %00000011, %00111111, %11111000 ; 23
+  .byt %00000000, %00000011, %00111111, %11111000 ; 24
+  .byt %00000000, %00000011, %00111111, %11111000 ; 25
+  .byt %00000000, %00000011, %00111111, %11111000 ; 26
   .byt %00000000, %00000000, %00111111, %11111000 ; 27
   .byt %00000000, %00000000, %00111111, %11111000 ; 28
   .byt %00000000, %00000000, %00111111, %11111000 ; 29
   .byt %00000000, %00000000, %00111111, %11111000 ; 30
   .byt %00000000, %00000000, %00111111, %11111000 ; 31
   .byt %00000000, %00000000, %00111111, %11111000 ; 32 правая часть экрана
+map_level_1_collision_map_1_first_2:
   .byt %00000000, %00000000, %00111111, %11111000 ; 1
   .byt %00000000, %00000000, %00111111, %11111000 ; 2
   .byt %00000000, %00000000, %00111111, %10111000 ; 3
   .byt %00000000, %00000000, %00111111, %10111000 ; 5
-  .byt %00000000, %00000000, %00111111, %10111000 ; 6
-  .byt %00000000, %00000000, %00111111, %10111000 ; 7
+  .byt %00000000, %00000000, %00000111, %10111000 ; 6
+  .byt %00000000, %00000000, %00001111, %10111000 ; 7
   .byt %00000000, %00000000, %00111111, %11111000 ; 8
   .byt %00000000, %00000000, %00111111, %11111000 ; 9
   .byt %00000000, %00000000, %00111111, %11111000 ; 10
@@ -90,38 +98,39 @@ map_level_1_collision_map_1_first:
   .byt %00000000, %00000000, %00111111, %11111000 ; 32
 
 map_level_1_collision_map_1_second:
-  .byt %00000000, %00000000, %00011111, %11110000 ; 1 левая часть экрана
-  .byt %00000000, %00000000, %00011111, %11110000 ; 2
-  .byt %00000000, %00000000, %00011111, %11110000 ; 3
-  .byt %00000000, %00000000, %00011111, %11110000 ; 5
-  .byt %00000000, %00000000, %00011111, %11110000 ; 6
-  .byt %00000000, %00000000, %00011111, %11110000 ; 7
-  .byt %00000000, %00000000, %00011111, %11110000 ; 8
-  .byt %00000000, %00000000, %00011111, %11110000 ; 9
-  .byt %00000000, %00000000, %00011111, %11110000 ; 10
-  .byt %00000000, %00000000, %00011111, %11110000 ; 11
-  .byt %00000000, %00000000, %00011111, %11110000 ; 12
-  .byt %00000000, %00000000, %00011111, %11110000 ; 13
-  .byt %00000000, %00000000, %00011111, %11110000 ; 13
-  .byt %00000000, %00000000, %00011111, %11110000 ; 14
-  .byt %00000000, %00000000, %00011111, %11110000 ; 15
-  .byt %00000000, %00000000, %00011111, %11110000 ; 16
-  .byt %00000000, %00000000, %00011111, %11110000 ; 17
-  .byt %00000000, %00000000, %00011111, %11110000 ; 18
-  .byt %00000000, %00000000, %00011111, %11110000 ; 19
-  .byt %00000000, %00000000, %00011111, %11110000 ; 20
-  .byt %00000000, %00000000, %00011111, %11110000 ; 21
-  .byt %00000000, %00000000, %00011111, %11110000 ; 22
-  .byt %00000000, %00000000, %00011111, %11110000 ; 23
-  .byt %00000000, %00000000, %00011111, %11110000 ; 24
-  .byt %00000000, %00000000, %00011111, %11110000 ; 25
-  .byt %00000000, %00000000, %00011111, %11110000 ; 26
-  .byt %00000000, %00000000, %00011111, %11110000 ; 27
+  .byt %00000000, %00000011, %11111111, %11111000 ; 1 левая часть экрана
+  .byt %00000000, %00000011, %11111111, %11111000 ; 2
+  .byt %00000000, %00000011, %11111111, %11111000 ; 3
+  .byt %00000000, %00000011, %11111111, %11111000 ; 5
+  .byt %00000000, %00000011, %11111111, %11111000 ; 6
+  .byt %00000000, %00000011, %11111111, %11111000 ; 7
+  .byt %00000000, %00000011, %11111111, %11111000 ; 8
+  .byt %00000000, %00000011, %11111111, %11111000 ; 9
+  .byt %00000000, %00000011, %11111111, %11111000 ; 10
+  .byt %00000000, %00000001, %11111111, %11111000 ; 11
+  .byt %00000000, %00000000, %11111111, %11111000 ; 12
+  .byt %00000000, %00000000, %01111111, %11111000 ; 13
+  .byt %00000000, %00000000, %00111111, %11111000 ; 13
+  .byt %00000000, %00000000, %00111111, %11111000 ; 14
+  .byt %00000000, %00000000, %01111111, %11100000 ; 15
+  .byt %00000000, %00000000, %11111111, %11111000 ; 16
+  .byt %00000000, %00000001, %11111111, %11111000 ; 17
+  .byt %00000000, %00000011, %11111111, %11111000 ; 18
+  .byt %00000000, %00000011, %11111111, %11111000 ; 19
+  .byt %00000000, %00000011, %00111111, %11111000 ; 20
+  .byt %00000000, %00000011, %00111111, %11111000 ; 21
+  .byt %00000000, %00000011, %00111111, %11111000 ; 22
+  .byt %00000000, %00000011, %00111111, %11111000 ; 23
+  .byt %00000000, %00000011, %00111111, %11111000 ; 24
+  .byt %00000000, %00000011, %00111111, %11111000 ; 25
+  .byt %00000000, %00000011, %00111111, %11111000 ; 26
+  .byt %00000000, %00000000, %00111111, %11111000 ; 27
   .byt %00000000, %00000000, %00011111, %11110000 ; 28
   .byt %00000000, %00000000, %00011111, %11110000 ; 29
   .byt %00000000, %00000000, %00011111, %11110000 ; 30
   .byt %00000000, %00000000, %00011111, %11110000 ; 31
   .byt %00000000, %00000000, %00011111, %11110000 ; 32 правая часть экрана
+map_level_1_collision_map_1_second_2:
   .byt %00000000, %00000000, %00011111, %11110000 ; 1
   .byt %00000000, %00000000, %00011111, %11110000 ; 2
   .byt %00000000, %00000000, %00011111, %10110000 ; 3
@@ -155,10 +164,22 @@ map_level_1_collision_map_1_second:
   .byt %00000000, %00000000, %00011111, %11110000 ; 31
   .byt %00000000, %00000000, %00011111, %11110000 ; 32
 
+collisionMap1:
+  .byt <map_level_1_collision_map_1_first, <map_level_1_collision_map_1_second
+collisionMap2:
+  .byt <map_level_1_collision_map_1_second, <map_level_1_collision_map_1_second_2
+
 .segment "CODE"
     COLLIDE_WATER =     %00000001
     COLLIDE_PLACE =     %00000011
     COLLIDE_BORDER =    %00000010
+
+.proc initVar
+    LDA #00
+    STA collisionPart
+
+    rts
+.endproc
 
 .proc calculateCollisionMap
     LDA scrollPosition
@@ -171,123 +192,27 @@ map_level_1_collision_map_1_second:
     RTS
 .endproc
 
-.proc calculateFakeX
+.proc calcHeroPosition
     LDA scrollPosition
     CLC
-    ADC heroXCoordinate
-    STA fakeXCoordinate
-
-    RTS
-.endproc
-
-.proc swapCurrentNameTable
-    LDA fakeXCoordinate
+    ADC collideX
     CMP #$FF
-    :
-        RTS
-    BNE :-
-    swapNameTable:
-        LDA currentNameTable
-        CMP #$01
-        :
-            LDA #$00
-            STA currentNameTable
-        BEQ :-
-
-        :
-            LDA #$01
-            STA currentNameTable
-        BEQ :-
-
-
+    BEQ collisionPartIncrement
+    RTS
+collisionPartIncrement:
+    INC collisionPart
     RTS
 .endproc
 
-.proc calculateNametable
-    LDA currentNameTable
-    CMP #$01
-    :
-        LDA #$00
-        STA currentAdc
-        RTS
-    BEQ :-
+.proc getCurrentCollisionMap
+    LDY collisionPart
+    LDA collisionMap1, y
+    STA collisionFirstLB
 
-    LDA #$04
-    STA currentAdc
+    LDA collisionMap2, y
+    STA collisionSecondLB
+
     RTS
-.endproc
-
-.proc collisionOnMapBack
-; x  = 9 ; y = 15 ; address 21ED
-    ; low byt in nametable
-        JSR calculateFakeX
-        JSR swapCurrentNameTable
-        JSR calculateNametable
-        LDA heroYCoordinate
-        CLC
-        ADC #24
-        LSR
-        LSR
-        LSR
-        LSR
-        LSR
-        LSR
-        CLC
-        ADC #$20
-        ADC currentAdc
-        TAX
-
-    ; calculate low byte
-       lda fakeXCoordinate
-       lsr
-       lsr
-       lsr
-       clc
-       adc collisionTmp
-       sta collisionTmp
-       ; x / 8
-
-       ; high byt in nametable
-       LDA heroYCoordinate
-       CLC
-       ADC #24
-       lsr
-       lsr
-       lsr
-       AND #7
-       asl
-       asl
-       asl
-       asl
-       asl
-       clc
-       adc collisionTmp
-       tay
-
-      LDA $2002
-      STX $2006
-      STY $2006
-      LDA $2007
-    ; check sprite in coordinate
-;    CMP #$00
-;    BEQ collideObjectYes
-;    CMP #$23
-;    BEQ collideObjectYes
-    CMP #$29
-    BEQ collideObjectYes
-    CMP #$2A
-    BEQ collideObjectYes
-    BNE collideObjectNo
-
-    collideObjectNo:
-        JSR collideNo
-
-        RTS
-    collideObjectYes:
-        JSR collideYes
-
-        RTS
-
 .endproc
 
 .proc collideNo
@@ -307,13 +232,15 @@ map_level_1_collision_map_1_second:
 .endproc
 
 .proc collisionOnMap
-    JSR calculateCollisionMap
+    JSR calcHeroPosition
+    JSR getCurrentCollisionMap
+
     LDA offsetColumn
     ASL 
     ASL
     TAY
 
-    LDA heroYCoordinate
+    LDA collideY
     CLC 
     ADC #18
     LSR
@@ -325,7 +252,7 @@ map_level_1_collision_map_1_second:
     CLC
     STA zacumulator
 
-    LDA heroXCoordinate
+    LDA collideX
     LSR
     LSR
     LSR
@@ -335,7 +262,7 @@ map_level_1_collision_map_1_second:
     ADC zacumulator
     TAY
 
-    LDA heroYCoordinate
+    LDA collideY
     CLC
     ADC #18
     LSR
@@ -344,20 +271,20 @@ map_level_1_collision_map_1_second:
     AND #7
     TAX
 
-    LDA scrollPosition
-    LSR
-    LSR
-    LSR
-    ASL
-    ASL
-    STA mapByteOffset
+;    LDA scrollPosition
+;    LSR
+;    LSR
+;    LSR
+;    ASL
+;    ASL
+;    STA mapByteOffset
+;
+;    TYA
+;    CLC
+;    ADC mapByteOffset
+;    TAY
 
-    TYA
-    CLC
-    ADC mapByteOffset
-    TAY
-
-    LDA map_level_1_collision_map_1_first, y
+    LDA (collisionFirstLB), y
     AND bit_mask, x
     BEQ firstBitZero
     BNE firstBitNotZero
@@ -372,7 +299,7 @@ firstBitNotZero:
 
     JMP secondFlagDetect
 secondFlagDetect:
-    LDA map_level_1_collision_map_1_second, y
+    LDA (collisionSecondLB), y
     AND bit_mask, x
     BEQ secondBitZero
     BNE secondBitNotZero
@@ -382,5 +309,6 @@ secondBitZero:
 secondBitNotZero:
     LDA collideFlag
     EOR #%00000010
+    STA collideFlag
     RTS
 .endproc

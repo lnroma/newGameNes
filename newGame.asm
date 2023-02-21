@@ -15,6 +15,7 @@
 .include "./lib/reset.asm"
 .include "./lib/stageFunctions.asm"
 .include "./lib/backgroundFunctions.asm"
+.include "./lib/heroStates/debugSquired.asm"
 
 .segment "HEADER"
 	.byt "NES",$1A
@@ -81,6 +82,11 @@
 
     stageStates: .res 1;
 
+    heroDirection: .res 1 ; 01 left 02 right
+    isHeroWalk: .res 1
+    isHeroFire: .res 1
+    isHeroStay: .res 1
+    lastPositionY: .res 1
 
 .segment "BSS"
 
@@ -105,19 +111,21 @@
 
 .proc nmi_isr
      JSR incScrollCounter
-;     JSR clearMemory
-     JSR readJoyPad
-     JSR readJoyState
-     JSR playerHundler
      JSR heroStateMovement
-     ;JSR screenFactory
      JSR screenFactoryTwo
      JSR swapNametable
      JSR drawNewAttribute
      JSR drawNewCollumn
-     JSR collisionOnMap
+     ; each time after write to ppu
      JSR scrolling
      JSR changeSpriteBuffer
+     ; read joy and player animation must be last run
+     JSR readJoyPad
+     JSR readJoyState
+     JSR playerHundler
+     ; always scrolling in last this interapt
+     JSR scrolling
+
      RTI
 .endproc
 

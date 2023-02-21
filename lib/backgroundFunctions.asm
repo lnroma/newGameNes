@@ -184,7 +184,7 @@ DrawNewColumn:
     STA sourceHig
 
  DrawColumn:
-    LDA #%1000100        ; set to increment +32 mode
+    LDA #%10000100
     EOR nameTable
     STA $2000
 
@@ -216,11 +216,9 @@ NewColumnCheck:
     AND #%00000111
     BNE NewColumnCheckDone
     JSR drawNewCollumnNametable
-
 ; задебажить здесь
     LDA columnNumber
-    CLC
-    ADC #$01
+
     AND #%01111111
     STA columnNumber
 NewColumnCheckDone:
@@ -238,9 +236,8 @@ NewColumnCheckDone:
 .proc swapNametable
 
 NameTableCheckSwap:
-    CLC
     LDA scrollPosition
-    CMP #$FD
+    CMP #$FF
     BNE NameTableCheckSwapDone
 NameTableSwap:
     LDA nameTable

@@ -9,10 +9,27 @@
 .endproc
 
 .proc heroRightWalk
-  LDA heroXCoordinate
-  CMP #122
-  BCS incrementScreen
-  BNE incrementX
+    LDA heroYCoordinate
+    STA collideY
+
+    LDA heroXCoordinate
+    CLC
+    ADC #1
+    STA collideX
+
+    JSR collisionOnMap
+    LDA collideFlag
+    CMP #%00000011
+    BEQ incXCoord
+
+    RTS
+
+  incXCoord:
+    LDA heroXCoordinate
+    CMP #122
+    BCS incrementScreen
+    BNE incrementX
+
   incrementScreen:
     JSR incrementScrollPosition
 ;    INC scrollPosition
@@ -23,14 +40,15 @@
 .endproc
 
 .proc incrementScrollPosition
-    LDA scrollCounter
-    AND #2
-    BEQ scrollPositionIncrement
-    BNE return
-    scrollPositionIncrement:
+;    LDA scrollCounter
+;    AND #2
+;    BEQ scrollPositionIncrement
+;    BNE return
+;    scrollPositionIncrement:
+;        INC scrollPosition
+;    return:
+;        RTS
     INC scrollPosition
-    JMP return
-    return:
     RTS
 .endproc
 
