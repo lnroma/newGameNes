@@ -216,7 +216,6 @@ NewColumnCheck:
     AND #%00000111
     BNE NewColumnCheckDone
     JSR drawNewCollumnNametable
-; задебажить здесь
     LDA columnNumber
 
     AND #%01111111

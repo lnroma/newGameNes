@@ -1,3 +1,4 @@
+.debuginfo on
 .include "./lib/player.asm"
 .include "./lib/heroStates/heroWalkRight.asm"
 .include "./lib/heroStates/heroStayRight.asm"
@@ -16,7 +17,6 @@
 .include "./lib/stageFunctions.asm"
 .include "./lib/backgroundFunctions.asm"
 .include "./lib/heroStates/debugSquired.asm"
-
 .segment "HEADER"
 	.byt "NES",$1A
 	.byt 1 				; 1 x 16kB PRG block.
