@@ -1,7 +1,56 @@
-
 .segment "ZEROPAGE"
   frameCountPlayerRightWalk: .res 1
   scrollCounter: .res 1
+
+  frameSpritesLB: .res 1
+  frameSpritesHB: .res 1
+
+  frameAttributesLB: .res 1
+  frameAttributesHB: .res 1
+
+  frameOffsetsXLB: .res 1
+  frameOffsetsXHB: .res 1
+
+  frameOffsetsYLB: .res 1
+  frameOffsetsYHB: .res 1
+
+.segment "RODATA"
+   frame1_sprites:
+      .byt $33
+      .byt $02, $03
+      .byt $12, $13
+      .byt $22, $23
+
+   frame2_sprites:
+      .byt $33
+      .byt $02, $03
+      .byt $14, $15
+      .byt $24, $25
+
+   frame3_sprites:
+      .byt $33
+      .byt $02, $03
+      .byt $16, $17
+      .byt $26, $27
+
+   frame_attributes:
+      .byt %00010110
+      .byt %00010111, %00010111
+      .byt %00010111, %00010111
+      .byt %00010111, %00010111
+
+   frame_offset_x:
+      .byt $06
+      .byt $00, $08
+      .byt $00, $08
+      .byt $00, $08
+
+   frame_offset_y:
+      .byt $00
+      .byt $00, $00
+      .byt $08, $08
+      .byt $10, $10
+
 .segment "CODE"
 
 .proc firstProcRightWalk
@@ -17,7 +66,7 @@
     ADC #1
     STA collideX
 
-    JSR collisionOnMap
+    JSR collisionOnMapRight
     LDA collideFlag
     CMP #%00000011
     BEQ incXCoord
@@ -40,26 +89,19 @@
 .endproc
 
 .proc incrementScrollPosition
-;    LDA scrollCounter
-;    AND #2
-;    BEQ scrollPositionIncrement
-;    BNE return
-;    scrollPositionIncrement:
-;        INC scrollPosition
-;    return:
-;        RTS
     INC scrollPosition
     RTS
 .endproc
 
 .proc drawHeroRightWalk
+    JSR commonInitFrame
     LDA scrollCounter
     AND #8
     CMP #1
     BEQ drawFrame1Label
-    AND #8
+    CMP #8
     BEQ drawFrame2Label
-    AND #10
+    CMP #10
     BEQ drawFrame3Label
 
   drawFrame1Label:
@@ -76,229 +118,78 @@
     RTS
 .endproc
 
+.proc drawFrame
+    LDX #00
+    LDY #00
+    frameDrawLoop:
+        LDA heroYCoordinate
+        CLC
+        ADC (frameOffsetsYLB), y
+        STA $0200, x
+        LDA (frameSpritesLB), y
+        INX
+        STA $0200, x
+        LDA (frameAttributesLB), y
+        INX
+        STA $0200, x
+        LDA heroXCoordinate
+        CLC
+        ADC (frameOffsetsXLB), y
+        INX
+        STA $0200, x
+        INX
+        INY
+        CPY #07
+        BNE frameDrawLoop
+
+    RTS
+.endproc
+
+.proc commonInitFrame
+    LDA #<frame_attributes
+    STA frameAttributesLB
+    LDA #>frame_attributes
+    STA frameAttributesHB
+
+    LDA #<frame_offset_x
+    STA frameOffsetsXLB
+    LDA #>frame_offset_x
+    STA frameOffsetsXHB
+
+    LDA #<frame_offset_y
+    STA frameOffsetsYLB
+    LDA #>frame_offset_y
+    STA frameOffsetsYHB
+
+    RTS
+.endproc
+
 .proc drawFrame1
-    LDA heroYCoordinate
-    STA $0200
-    LDA #$02
-    STA $0201
-    LDA #%00010111
-    STA $0202
-    LDA heroXCoordinate
-    STA $0203
+    LDA #<frame1_sprites
+    STA frameSpritesLB
+    LDA #>frame1_sprites
+    STA frameSpritesHB
 
-    LDA heroYCoordinate
-    ADC #7
-    STA $0204
-    LDA #$12
-    STA $0205
-    LDA #%00010111
-    STA $0206
-    LDA heroXCoordinate
-    STA $0207
-
-    LDA heroYCoordinate
-    ADC #16
-    STA $0208
-    LDA #$22
-    STA $0209
-    LDA #%00010111
-    STA $020A
-    LDA heroXCoordinate
-    STA $020B
-
-    LDA heroYCoordinate
-    STA $020C
-    LDA #$03
-    STA $020D
-    LDA #%00010111
-    STA $020E
-    LDA heroXCoordinate
-    ADC #8
-    STA $020F
-
-    LDA heroYCoordinate
-    ADC #8
-    STA $0210
-    LDA #$13
-    STA $0211
-    LDA #%00010111
-    STA $0212
-    LDA heroXCoordinate
-    ADC #8
-    STA $0213
-
-    LDA heroYCoordinate
-    ADC #16
-    STA $0214
-    LDA #$23
-    STA $0215
-    LDA #%00010111
-    STA $0216
-    LDA heroXCoordinate
-    ADC #8
-    STA $0217
-
-    LDA heroYCoordinate
-    STA $0218
-    LDA #$04
-    STA $0219
-    LDA #%00010110
-    STA $021A
-    LDA heroXCoordinate
-    ADC #6
-    STA $021B
-
-    rts
+    JSR drawFrame
+    RTS
 .endproc
 
 .proc drawFrame2
-    LDA heroYCoordinate
-    STA $0200
-    LDA #$02
-    STA $0201
-    LDA #%00010111
-    STA $0202
-    LDA heroXCoordinate
-    STA $0203
+    LDA #<frame2_sprites
+    STA frameSpritesLB
+    LDA #>frame2_sprites
+    STA frameSpritesHB
 
-    LDA heroYCoordinate
-    ADC #7
-    STA $0204
-    LDA #$14
-    STA $0205
-    LDA #%00010111
-    STA $0206
-    LDA heroXCoordinate
-    STA $0207
-
-    LDA heroYCoordinate
-    ADC #16
-    STA $0208
-    LDA #$24
-    STA $0209
-    LDA #%00010111
-    STA $020A
-    LDA heroXCoordinate
-    STA $020B
-
-    LDA heroYCoordinate
-    STA $020C
-    LDA #$03
-    STA $020D
-    LDA #%00010111
-    STA $020E
-    LDA heroXCoordinate
-    ADC #8
-    STA $020F
-
-    LDA heroYCoordinate
-    ADC #8
-    STA $0210
-    LDA #$15
-    STA $0211
-    LDA #%00010111
-    STA $0212
-    LDA heroXCoordinate
-    ADC #8
-    STA $0213
-
-    LDA heroYCoordinate
-    ADC #16
-    STA $0214
-    LDA #$25
-    STA $0215
-    LDA #%00010111
-    STA $0216
-    LDA heroXCoordinate
-    ADC #8
-    STA $0217
-
-    LDA heroYCoordinate
-    STA $0218
-    LDA #$04
-    STA $0219
-    LDA #%00010110
-    STA $021A
-    LDA heroXCoordinate
-    ADC #6
-    STA $021B
-    rts
+    JSR drawFrame
+    RTS
 .endproc
 
 .proc drawFrame3
-    LDA heroYCoordinate
-    STA $0200
-    LDA #$02
-    STA $0201
-    LDA #%00010111
-    STA $0202
-    LDA heroXCoordinate
-    STA $0203
+    LDA #<frame3_sprites
+    STA frameSpritesLB
+    LDA #>frame3_sprites
+    STA frameSpritesHB
 
-    LDA heroYCoordinate
-    ADC #7
-    STA $0204
-    LDA #$16
-    STA $0205
-    LDA #%00010111
-    STA $0206
-    LDA heroXCoordinate
-    STA $0207
-
-    LDA heroYCoordinate
-    ADC #16
-    STA $0208
-    LDA #$26
-    STA $0209
-    LDA #%00010111
-    STA $020A
-    LDA heroXCoordinate
-    STA $020B
-
-    LDA heroYCoordinate
-    STA $020C
-    LDA #$03
-    STA $020D
-    LDA #%00010111
-    STA $020E
-    LDA heroXCoordinate
-    ADC #8
-    STA $020F
-
-    LDA heroYCoordinate
-    ADC #8
-    STA $0210
-    LDA #$17
-    STA $0211
-    LDA #%00010111
-    STA $0212
-    LDA heroXCoordinate
-    ADC #8
-    STA $0213
-
-    LDA heroYCoordinate
-    ADC #16
-    STA $0214
-    LDA #$27
-    STA $0215
-    LDA #%00010111
-    STA $0216
-    LDA heroXCoordinate
-    ADC #8
-    STA $0217
-
-    LDA heroYCoordinate
-    STA $0218
-    LDA #$04
-    STA $0219
-    LDA #%00010110
-    STA $021A
-    LDA heroXCoordinate
-    ADC #6
-    STA $021B
-    rts
-.endproc
-
-.proc clearWalkRight
-
+    JSR drawFrame
+    RTS
 .endproc

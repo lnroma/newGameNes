@@ -6,13 +6,14 @@
 
 .proc drawStayRight
   LDA heroYCoordinate
+  ADC #0
   STA $0200
-  LDA #$04
+  LDA #$34
   STA $0201
   LDA #%00010110
   STA $0202
   LDA heroXCoordinate
-  ADC #6
+  ADC #4
   STA $0203
 
   LDA heroYCoordinate
@@ -46,9 +47,9 @@
 
   LDA heroYCoordinate
   STA $0210
-  LDA #$01
+  LDA #$00
   STA $0211
-  LDA #%00010111
+  LDA #%01010111
   STA $0212
   LDA heroXCoordinate
   ADC #8
@@ -81,32 +82,12 @@
 
 .proc clearStayRight
     LDA #$00
-    STA $0200
-    STA $0201
-    STA $0202
-    STA $0203
-    STA $0204
-    STA $0205
-    STA $0206
-    STA $0207
-    STA $0208
-    STA $0209
-    STA $020A
-    STA $020B
-    STA $020C
-    STA $020D
-    STA $020E
-    STA $020F
-    STA $0210
-    STA $0211
-    STA $0212
-    STA $0213
-    STA $0214
-    STA $0215
-    STA $0216
-    STA $0217
-    STA $0218
-    STA $0219
-    STA $021A
-    STA $021B
+    LDX #$00
+clearLoop:
+    STA $0200, x
+    INX
+    CMP #$23
+    BNE clearLoop
+
+    RTS
 .endproc

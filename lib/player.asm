@@ -48,10 +48,12 @@
 .endproc
 
 .proc scrolling
+  PHA
   LDA scrollPosition
   STA $2005
   LDA #$00
   STA $2005
+  PLA
   RTS
 .endproc
 
@@ -75,9 +77,9 @@
 
 .proc playerGravity
 RTS
-    JSR collisionOnMap
-    LDA collideFlag
-    CMP #%00000011
+;    JSR collisionOnMap
+;    LDA collideFlag
+;    CMP #%00000011
     BNE incy
     BEQ return
 incy:
@@ -288,13 +290,14 @@ return:
 .proc heroDownWalk
     LDA heroYCoordinate
     CLC
-    ADC #1
+    ADC #16
     STA collideY
 
     LDA heroXCoordinate
     STA collideX
 
-    JSR collisionOnMap
+    JSR collisionOnMapDown
+;    JSR collisionOnPolygonY
     LDA collideFlag
     CMP #%00000011
     BEQ incrementY
@@ -310,13 +313,13 @@ return:
 .proc heroUpWalk
     LDA heroYCoordinate
     CLC
-    SBC #1
+    ADC #16
     STA collideY
 
     LDA heroXCoordinate
     STA collideX
 
-    JSR collisionOnMap
+    JSR collisionOnMapUp
     LDA collideFlag
     CMP #%00000011
     BEQ decrementY
@@ -442,7 +445,7 @@ return:
             JSR drawStayRight
             RTS
         drawStayLeftLabel:
-            JSR drawStayLeft
+            JSR drawStayRight
             RTS
     return:
         RTS

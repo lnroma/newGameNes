@@ -16,157 +16,40 @@
    collisionFirstLB: .res 1
    collisionSecondLB: .res 1
 
-   collisionRAM: .res 128
+   collisionRAM1: .res 128
+;   collisionRAM2: .res 128
+   currentNameTableCollide: .res 1
+
+   collisionPart: .res 1
+   tmpCompare: .res 1
+
 .segment "RODATA"
 
-bit_mask:
-  .byt %10000000
-  .byt %01000000
-  .byt %00100000
-  .byt %00010000
-  .byt %00001000
-  .byt %00000100
-  .byt %00000010
-  .byt %00000001
+collisionRectangle:
+  ;    begin x, y
+  .byt $01, $70
+  ;    end x, y
+  .byt $F8, $D8
 
-map_level_1_collision_map_1_first:
-  .byt %00000111, %00000011, %11111111, %11111000 ; 1 левая часть экрана
-  .byt %00000000, %00000011, %11111111, %11111000 ; 2
-  .byt %00000000, %00000011, %11111111, %11111000 ; 3
-  .byt %00000000, %00000011, %11111111, %11111000 ; 5
-  .byt %00000000, %00000011, %11111111, %11111000 ; 6
-  .byt %00000000, %00000011, %11111111, %11111000 ; 7
-  .byt %00000000, %00000011, %11111100, %10111000 ; 8
-  .byt %00001110, %00000011, %11111000, %11111000 ; 9
-  .byt %00000000, %00000011, %11110000, %11111000 ; 10
-  .byt %00000000, %00000001, %11111111, %11111000 ; 11
-  .byt %00000000, %00000000, %11111111, %11111000 ; 12
-  .byt %00000000, %00000000, %01111111, %11111000 ; 13
-  .byt %00000000, %00000000, %00111111, %11111000 ; 13
-  .byt %00000000, %00000000, %00111111, %11111000 ; 14
-  .byt %00000000, %00000000, %01111111, %11100000 ; 15
-  .byt %00000000, %00000000, %11111111, %11111000 ; 16
-  .byt %00000000, %00000001, %11111111, %11111000 ; 17
-  .byt %00000000, %00000011, %11111111, %11111000 ; 18
-  .byt %00000000, %00000011, %11111111, %11111000 ; 19
-  .byt %00000000, %00000011, %00111111, %11111000 ; 20
-  .byt %00000000, %00000011, %00111111, %11111000 ; 21
-  .byt %00000000, %00000011, %00111111, %11111000 ; 22
-  .byt %00000000, %00000011, %00111111, %11111000 ; 23
-  .byt %00000000, %00000011, %00111111, %11111000 ; 24
-  .byt %11111111, %11111111, %11111111, %11111111 ; 25
-  .byt %11111111, %11111111, %11111111, %11111111 ; 26
-  .byt %11111111, %11111111, %11111111, %11111111 ; 27
-  .byt %11111111, %11111111, %11111111, %11111111 ; 28
-  .byt %00000000, %00000000, %00111111, %11111000 ; 29
-  .byt %00000000, %00000000, %00111111, %11111000 ; 30
-  .byt %00000000, %00000000, %00111111, %11111000 ; 31
-  .byt %00000010, %00000000, %00111111, %11111000 ; 32 правая часть экрана
-map_level_1_collision_map_1_first_2:
-  .byt %00000000, %00000000, %00111111, %11111000 ; 1
-  .byt %00000000, %00000000, %00111111, %11111000 ; 2
-  .byt %00000000, %00000000, %00111111, %10111000 ; 3
-  .byt %00000000, %00000000, %00111111, %10111000 ; 5
-  .byt %00000000, %00000000, %00000111, %10111000 ; 6
-  .byt %00000000, %00000000, %00001111, %10111000 ; 7
-  .byt %00000000, %00000000, %00111111, %11111000 ; 8
-  .byt %00000000, %00000000, %00111111, %11111000 ; 9
-  .byt %00000000, %00000000, %00111111, %11111000 ; 10
-  .byt %00000000, %00000000, %00111111, %11111000 ; 11
-  .byt %00000000, %00000000, %00111111, %11111000 ; 12
-  .byt %00000000, %00000000, %00111111, %11111000 ; 13
-  .byt %00000000, %00000000, %00111111, %11111000 ; 13
-  .byt %00000000, %00000000, %00111111, %11111000 ; 14
-  .byt %00000000, %00000000, %00111111, %11111000 ; 15
-  .byt %00000000, %00000000, %00111111, %11111000 ; 16
-  .byt %00000000, %00000000, %00111111, %11111000 ; 17
-  .byt %00000000, %00000000, %00111111, %11111000 ; 18
-  .byt %00000000, %00000000, %00111111, %11111000 ; 19
-  .byt %00000000, %00000000, %00111111, %11111000 ; 20
-  .byt %00000000, %00000000, %00111111, %11111000 ; 21
-  .byt %00000000, %00000000, %00111111, %11111000 ; 22
-  .byt %00000000, %00000000, %00111111, %11111000 ; 23
-  .byt %00000000, %00000000, %00111111, %11111000 ; 24
-  .byt %00000000, %00000000, %00111111, %11111000 ; 25
-  .byt %00000000, %00000000, %00111111, %11111000 ; 26
-  .byt %00000000, %00000000, %00111111, %11111000 ; 27
-  .byt %00000000, %00000000, %00111111, %11111000 ; 28
-  .byt %00000000, %00000000, %00111111, %11111000 ; 29
-  .byt %00000000, %00000000, %00111111, %11111000 ; 30
-  .byt %00000000, %00000000, %00111111, %11111000 ; 31
-  .byt %00000000, %00000000, %00111111, %11111000 ; 32
+; collision polygon 12*8, 27*8 and 15*8, 25*8
+; 13,27 | 18,27 | 14,26 | 19,26 | 15,25 | 20,25
+; 68,D8 | 90,D8 | 70,D0 | 98,D0 | 78,C8 | A0,C8
+collisionPolygonOneX:
+  .byt $68 ; 1
+  .byt $90 ; 2
+  .byt $70 ; 3
 
-map_level_1_collision_map_1_second:
-  .byt %00110000, %00000011, %11111111, %11111000 ; 1 левая часть экрана
-  .byt %00000000, %00000011, %11111111, %11111000 ; 2
-  .byt %00000000, %00000011, %11111111, %11111000 ; 3
-  .byt %00000000, %00000011, %11111111, %11111000 ; 5
-  .byt %00000000, %00000011, %11111111, %11111000 ; 6
-  .byt %00000000, %00000011, %11111111, %11111000 ; 7
-  .byt %00000000, %00000011, %11111111, %11111000 ; 8
-  .byt %00000000, %00000011, %11111111, %11111000 ; 9
-  .byt %00000000, %00000011, %11111111, %11111000 ; 10
-  .byt %00000000, %00000001, %11111111, %11111000 ; 11
-  .byt %00000000, %00000000, %11111111, %11111000 ; 12
-  .byt %00000000, %00000000, %01111111, %11111000 ; 13
-  .byt %00000000, %00000000, %00111111, %11111000 ; 13
-  .byt %00000000, %00000000, %00111111, %11111000 ; 14
-  .byt %00000000, %00000000, %01111111, %11100000 ; 15
-  .byt %00000000, %00000000, %11111111, %11111000 ; 16
-  .byt %00000000, %00000001, %11111111, %11111000 ; 17
-  .byt %00000000, %00000011, %11111111, %11111000 ; 18
-  .byt %00000000, %00000011, %11111111, %11111000 ; 19
-  .byt %00000000, %00000011, %00111111, %11111000 ; 20
-  .byt %00000000, %00000011, %00111111, %11111000 ; 21
-  .byt %00000000, %00000011, %00111111, %11111000 ; 22
-  .byt %00000000, %00000011, %00111111, %11111000 ; 23
-  .byt %00000000, %00000011, %00111111, %11111000 ; 24
-  .byt %11111111, %11111111, %11111111, %11111111 ; 25
-  .byt %11111111, %11111111, %11111111, %11111111 ; 26
-  .byt %11111111, %11111111, %11111111, %11111111 ; 27
-  .byt %11111111, %11111111, %11111111, %11111111 ; 28
-  .byt %00000000, %00000000, %00011111, %11110000 ; 29
-  .byt %00000000, %00000000, %00011111, %11110000 ; 30
-  .byt %00000000, %00000000, %00011111, %11110000 ; 31
-  .byt %00000000, %00000000, %00011111, %11110000 ; 32 правая часть экрана
-map_level_1_collision_map_1_second_2:
-  .byt %00000000, %00000000, %00011111, %11110000 ; 1
-  .byt %00000000, %00000000, %00011111, %11110000 ; 2
-  .byt %00000000, %00000000, %00011111, %10110000 ; 3
-  .byt %00000000, %00000000, %00011111, %10110000 ; 5
-  .byt %00000000, %00000000, %00011111, %10110000 ; 6
-  .byt %00000000, %00000000, %00011111, %10110000 ; 7
-  .byt %00000000, %00000000, %00011111, %11110000 ; 8
-  .byt %00000000, %00000000, %00011111, %11110000 ; 9
-  .byt %00000000, %00000000, %00011111, %11110000 ; 10
-  .byt %00000000, %00000000, %00011111, %11110000 ; 11
-  .byt %00000000, %00000000, %00011111, %11110000 ; 12
-  .byt %00000000, %00000000, %00011111, %11110000 ; 13
-  .byt %00000000, %00000000, %00011111, %11110000 ; 13
-  .byt %00000000, %00000000, %00011111, %11110000 ; 14
-  .byt %00000000, %00000000, %00011111, %11110000 ; 15
-  .byt %00000000, %00000000, %00011111, %11110000 ; 16
-  .byt %00000000, %00000000, %00011111, %11110000 ; 17
-  .byt %00000000, %00000000, %00011111, %11110000 ; 18
-  .byt %00000000, %00000000, %00011111, %11110000 ; 19
-  .byt %00000000, %00000000, %00011111, %11110000 ; 20
-  .byt %00000000, %00000000, %00011111, %11110000 ; 21
-  .byt %00000000, %00000000, %00011111, %11110000 ; 22
-  .byt %00000000, %00000000, %00011111, %11110000 ; 23
-  .byt %00000000, %00000000, %00011111, %11110000 ; 24
-  .byt %00000000, %00000000, %00011111, %11110000 ; 25
-  .byt %00000000, %00000000, %00011111, %11110000 ; 26
-  .byt %00000000, %00000000, %00011111, %11110000 ; 27
-  .byt %00000000, %00000000, %00011111, %11110000 ; 28
-  .byt %00000000, %00000000, %00011111, %11110000 ; 29
-  .byt %00000000, %00000000, %00011111, %11110000 ; 30
-  .byt %00000000, %00000000, %00011111, %11110000 ; 31
-  .byt %00000000, %00000000, %00011111, %11110000 ; 32
+  .byt $98 ; 4
+  .byt $78 ; 5
+  .byt $A0 ; 6
+collisionPolygonOneY:
+  .byt $D8
+  .byt $D8
+  .byt $D0
 
-collisionMap1:
-  .byt <map_level_1_collision_map_1_first, <map_level_1_collision_map_1_second
-collisionMap2:
-  .byt <map_level_1_collision_map_1_second, <map_level_1_collision_map_1_second_2
+  .byt $D0
+  .byt $C8
+  .byt $C8
 
 .segment "CODE"
     COLLIDE_WATER =     %00000001
@@ -180,126 +63,96 @@ collisionMap2:
     rts
 .endproc
 
-.proc calculateCollisionMap
-    LDA scrollPosition
-    AND #%00000111
-    BEQ skipCalculate
-
-    INC offsetColumn
-
-  skipCalculate:
+.proc collisionOnMapUp
+    LDY collideY
+    LDX #01
+    TYA
+    CMP collisionRectangle, x
+    BCS collisionYNo
+    BCC collisionYYes
+collisionYNo:
+    LDA #%00000011
+    STA collideFlag
     RTS
-.endproc
-
-.proc calcHeroPosition
-    LDA scrollPosition
-    CLC
-    ADC collideX
-    CMP #$FF
-    BEQ collisionPartIncrement
-    RTS
-collisionPartIncrement:
-    INC collisionPart
-    RTS
-.endproc
-
-.proc getCurrentCollisionMap
-    LDY collisionPart
-    LDA collisionMap1, y
-    LDA #<map_level_1_collision_map_1_first
-    STA collisionFirstLB
-
-    LDA collisionMap2, y
-    LDA #<map_level_1_collision_map_1_second
-    STA collisionSecondLB
-
-    RTS
-.endproc
-
-.proc collideNo
-    LDA #01
-    STA isGravity
-;    inc heroYCoordinate
-;    INC heroYCoordinate
-    RTS
-.endproc
-
-.proc collideYes
-    LDA #00
-    STA isGravity
-    STA jumpHeight
-    STA isJump
-    RTS
-.endproc
-
-.proc collisionOnMap
-    JSR calcHeroPosition
-    JSR getCurrentCollisionMap
-
-    LDA offsetColumn
-    ASL 
-    ASL
-    TAY
-
-    LDA collideY
-    CLC
-    ADC #18
-    LSR
-    LSR
-    LSR
-    LSR
-    LSR
-    LSR
-    CLC
-    STA zacumulator
-
-    LDA collideX
-;    CLC
-;    ADC scrollPosition
-    LSR
-    LSR
-    LSR
-    ASL
-    ASL
-    CLC
-    ADC zacumulator
-    TAY
-
-    LDA collideY
-    CLC
-    ADC #18
-    LSR
-    LSR
-    LSR
-    AND #7
-    TAX
-
-    LDY #$02
-    LDA collisionFirstLB, y
-    AND bit_mask, x
-    BEQ firstBitZero
-    BNE firstBitNotZero
-firstBitZero:
+collisionYYes:
     LDA #%00000000
     STA collideFlag
-
-    JMP secondFlagDetect
-firstBitNotZero:
-    LDA #%00000001
-    STA collideFlag
-
-    JMP secondFlagDetect
-secondFlagDetect:
-    LDA (collisionSecondLB), y
-    AND bit_mask, x
-    BEQ secondBitZero
-    BNE secondBitNotZero
-
-secondBitZero:
     RTS
-secondBitNotZero:
-    LDA collideFlag
-    EOR #%00000010
+.endproc
+
+.proc collisionOnMapLeft
+    LDY collideX
+    LDX #00
+    TYA
+    CMP collisionRectangle, x
+    BCC collisionNo
+    BCS collisionYes
+collisionYes:
+    LDA #%00000011
+    STA collideFlag
+    RTS
+collisionNo:
+    LDA #%00000000
+    STA collideFlag
+    RTS
+.endproc
+
+.proc collisionOnPolygonX
+    LDY collideX
+    LDX #02
+    TYA
+    CMP collisionPolygonOneX, x
+    BCS checkCollideY
+    BCC collisionYes
+checkCollideY:
+    LDA collideY
+    CMP collisionPolygonOneY, x
+    BCS collisionNo
+    BCC collisionYes
+collisionYes:
+    LDA #%00000011
+    STA collideFlag
+    RTS
+collisionNo:
+    LDA #%00000000
+    STA collideFlag
+    RTS
+.endproc
+
+.proc collisionOnPolygonY
+    LDA collideY
+    LDX #02
+    CMP collisionPolygonOneY, x
+    BCS collisionNo
+    BCC collisionYes
+collisionYes:
+    LDA #%00000011
+    STA collideFlag
+    RTS
+collisionNo:
+    LDA #%00000000
+    STA collideFlag
+    RTS
+.endproc
+
+.proc collisionOnMapRight
+    JSR collisionOnPolygonX
+    RTS
+.endproc
+
+.proc collisionOnMapDown
+    LDY collideY
+    LDX #03
+    TYA
+    CMP collisionRectangle, x
+    BCS collisionNo
+    BCC collisionYes
+collisionYes:
+    LDA #%00000011
+    STA collideFlag
+    RTS
+collisionNo:
+    LDA #%00000000
     STA collideFlag
     RTS
 .endproc

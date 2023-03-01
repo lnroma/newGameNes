@@ -119,9 +119,12 @@
      ; each time after write to ppu
      JSR scrolling
      JSR changeSpriteBuffer
+     JSR scrolling
      ; read joy and player animation must be last run
      JSR readJoyPad
+     JSR scrolling
      JSR readJoyState
+     JSR scrolling
      JSR playerHundler
      ; always scrolling in last this interapt
      JSR scrolling
@@ -146,7 +149,7 @@
     JSR setHeroVar
 ;    JSR loadPalete
     JSR setStageVar
-    ; load first stage display
+    ; @todo create state automat
     JSR loadStageTwoBackground
     JSR loadPaleteStageTwo
 
