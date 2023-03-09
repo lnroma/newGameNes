@@ -58,6 +58,24 @@
 .endproc
 
 .proc heroRightWalk
+    LDA isStageEnd
+    CMP #01
+    BEQ heroRightWalkIncrementX
+    BNE heroRightWalk
+  heroRightWalkIncrementX:
+    JSR heroRightWalkIncrementXCoordinate
+    RTS
+  heroRightWalk:
+    JSR heroRightWalkStandard
+    RTS
+.endproc
+
+.proc heroRightWalkIncrementXCoordinate
+    INC heroXCoordinate
+    RTS
+.endproc
+
+.proc heroRightWalkStandard
     LDA heroYCoordinate
     STA collideY
 

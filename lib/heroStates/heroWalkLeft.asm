@@ -45,14 +45,6 @@
 .endproc
 
 .proc heroLeftWalk
-    LDA heroYCoordinate
-    STA collideY
-
-    LDA heroXCoordinate
-    CLC
-    SBC #1
-    STA collideX
-
     JSR collisionOnMapLeft
     LDA collideFlag
     CMP #%00000011

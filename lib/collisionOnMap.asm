@@ -14,42 +14,165 @@
    collideFlag: .res 1
 
    collisionFirstLB: .res 1
+   collisionFirstHB: .res 1
+
    collisionSecondLB: .res 1
 
-   collisionRAM1: .res 128
-;   collisionRAM2: .res 128
-   currentNameTableCollide: .res 1
-
    collisionPart: .res 1
-   tmpCompare: .res 1
+   isStageEnd: .res 1
 
 .segment "RODATA"
 
-collisionRectangle:
-  ;    begin x, y
-  .byt $01, $70
-  ;    end x, y
-  .byt $F8, $D8
+bit_mask:
+  .byt %10000000
+  .byt %01000000
+  .byt %00100000
+  .byt %00010000
+  .byt %00001000
+  .byt %00000100
+  .byt %00000010
+  .byt %00000001
 
-; collision polygon 12*8, 27*8 and 15*8, 25*8
-; 13,27 | 18,27 | 14,26 | 19,26 | 15,25 | 20,25
-; 68,D8 | 90,D8 | 70,D0 | 98,D0 | 78,C8 | A0,C8
-collisionPolygonOneX:
-  .byt $68 ; 1
-  .byt $90 ; 2
-  .byt $70 ; 3
+level2map1part:
+  .byt %00000000, %00000000, %00000000, %00000000 ; 4
+  .byt %00000000, %00000000, %00000000, %00000000 ; 8
+  .byt %00000000, %00000000, %00000000, %00000000 ; 02
+  .byt %00000000, %00000000, %00000000, %00000000 ; 06
+  .byt %00000000, %00000000, %00000000, %00000000 ; 08
+  .byt %00000000, %00000000, %00000000, %00000000
+  .byt %00000000, %00000000, %00000000, %00000000
+  .byt %00000000, %00000000, %00000000, %00000000
+  .byt %00000000, %00000000, %00000000, %00000000
+  .byt %00000000, %00000000, %00000000, %00000000 ; 00
+  
+  .byt %00000000, %00000000, %00000000, %00000000
+  .byt %00000000, %00000000, %00000000, %00000000
+  .byt %00000000, %00000000, %00000000, %00000000
+  .byt %11111111, %00000000, %00111111, %11111111
+  .byt %11111111, %10000000, %01111111, %11111111
+  .byt %11111111, %11000000, %11111111, %11111111
+  .byt %11111111, %11100001, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111 ; 21
+  
+  .byt %11111111, %11111111, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111
+  .byt %11111111, %11111111, %11111111, %11111111 ; 27
+  .byt %11111111, %11111111, %11000111, %11111111
+  .byt %11111111, %11111111, %10001111, %11111111
+  .byt %00000000, %00000000, %00000000, %00000000
 
-  .byt $98 ; 4
-  .byt $78 ; 5
-  .byt $A0 ; 6
-collisionPolygonOneY:
-  .byt $D8
-  .byt $D8
-  .byt $D0
+level2map2part:
+    .byt %00000000, %00000000, %00000000, %00000000 ; 4
+    .byt %00000000, %00000000, %00000000, %00000000 ; 8
+    .byt %00000000, %00000000, %00000000, %00000000 ; 02
+    .byt %00000000, %00000000, %00000000, %00000000 ; 06
+    .byt %00000000, %00000000, %00000000, %00000000 ; 08
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000 ; 00
+    
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111 ; 21
+    
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111 ; 27
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %00000000, %00000000, %00000000, %00000000
 
-  .byt $D0
-  .byt $C8
-  .byt $C8
+level2map3part:
+    .byt %00000000, %00000000, %00000000, %00000000 ; 4
+    .byt %00000000, %00000000, %00000000, %00000000 ; 8
+    .byt %00000000, %00000000, %00000000, %00000000 ; 02
+    .byt %00000000, %00000000, %00000000, %00000000 ; 06
+    .byt %00000000, %00000000, %00000000, %00000000 ; 08
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000 ; 00
+      
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %10000000, %00000000, %00000000, %00000000
+    .byt %11000000, %00000011, %11000000, %00000000
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111 ; 21
+      
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111 ; 27
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %00000000, %00000000, %00000000, %00000000
+    
+level2map4part:
+    .byt %00000000, %00000000, %00000000, %00000000 ; 4
+    .byt %00000000, %00000000, %00000000, %00000000 ; 8
+    .byt %00000000, %00000000, %00000000, %00000000 ; 02
+    .byt %00000000, %00000000, %00000000, %00000000 ; 06
+    .byt %00000000, %00000000, %00000000, %00000000 ; 08
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000 ; 00
+
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %00000000, %00000000, %00000000, %00000000
+    .byt %10000000, %00000000, %00000000, %00000000
+    .byt %11000000, %00000011, %11000000, %00000000
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111 ; 21
+
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111 ; 27
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %11111111, %11111111, %11111111, %11111111
+    .byt %00000000, %00000000, %00000000, %00000000
+
+collisionMap1Low:
+  .byt <level2map1part, <level2map2part, <level2map3part, <level2map4part
+collisionMap1High:
+  .byt >level2map1part, >level2map2part, >level2map3part, >level2map4part
 
 .segment "CODE"
     COLLIDE_WATER =     %00000001
@@ -57,102 +180,174 @@ collisionPolygonOneY:
     COLLIDE_BORDER =    %00000010
 
 .proc initVar
-    LDA #00
-    STA collisionPart
-
     rts
 .endproc
 
-.proc collisionOnMapUp
-    LDY collideY
-    LDX #01
-    TYA
-    CMP collisionRectangle, x
-    BCS collisionYNo
-    BCC collisionYYes
-collisionYNo:
-    LDA #%00000011
-    STA collideFlag
+.proc calculateCollisionMap
+    LDA scrollPosition
+    AND #%00000111
+    BEQ skipCalculate
+
+    INC offsetColumn
+
+  skipCalculate:
     RTS
-collisionYYes:
+.endproc
+
+.proc calcHeroPosition
+    LDA scrollPosition
+    CLC
+    ADC heroXCoordinate
+    CMP #$FF
+    BEQ collisionPartIncrement
+    RTS
+collisionPartIncrement:
+    LDA isStageEnd
+    CMP #01
+    BEQ return
+    INC collisionPart
+return:
+    RTS
+.endproc
+
+.proc getCurrentCollisionMap
+    LDY collisionPart
+    LDA collisionMap1Low, y
+    STA collisionFirstLB
+    LDA collisionMap1High, y
+    STA collisionFirstHB
+
+    RTS
+.endproc
+
+.proc collideNo
+    LDA #01
+    STA isGravity
+;    inc heroYCoordinate
+;    INC heroYCoordinate
+    RTS
+.endproc
+
+.proc collideYes
+    LDA #00
+    STA isGravity
+    STA jumpHeight
+    STA isJump
+    RTS
+.endproc
+
+.proc collisionOnMap
+    JSR calcHeroPosition
+    JSR getCurrentCollisionMap
+
+    LDA collideX
+    LSR
+    LSR
+    LSR
+    LSR
+    LSR
+    LSR
+    STA zacumulator
+
+    LDA collideY
+    LSR
+    LSR
+    LSR
+    ASL
+    ASL
+    CLC
+    ADC zacumulator
+    TAY
+
+    LDA collideX
+    LSR
+    LSR
+    LSR
+    AND #7
+    TAX
+
+    LDA (collisionFirstLB), y
+    AND bit_mask, x
+    BNE collisionNo
+    BEQ collisionYes ; if Z flag is set after and 0
+collisionYes:
     LDA #%00000000
     STA collideFlag
+
+    RTS
+collisionNo:
+    LDA #%00000011
+    STA collideFlag
+
     RTS
 .endproc
 
 .proc collisionOnMapLeft
-    LDY collideX
-    LDX #00
-    TYA
-    CMP collisionRectangle, x
-    BCC collisionNo
-    BCS collisionYes
-collisionYes:
-    LDA #%00000011
-    STA collideFlag
-    RTS
-collisionNo:
-    LDA #%00000000
-    STA collideFlag
-    RTS
-.endproc
+    LDA heroYCoordinate
+    CLC
+    ADC #17
+    STA collideY
 
-.proc collisionOnPolygonX
-    LDY collideX
-    LDX #02
-    TYA
-    CMP collisionPolygonOneX, x
-    BCS checkCollideY
-    BCC collisionYes
-checkCollideY:
-    LDA collideY
-    CMP collisionPolygonOneY, x
-    BCS collisionNo
-    BCC collisionYes
-collisionYes:
-    LDA #%00000011
+    LDA heroXCoordinate
+    PHA
+    ADC #1
+    CMP scrollPosition
+    BEQ leftCollision
+    PLA
+    ADC scrollPosition
+    SBC #1
+    STA collideX
+    JMP collisionOnMapLabel
+leftCollision:
+    LDA #$00
     STA collideFlag
-    RTS
-collisionNo:
-    LDA #%00000000
-    STA collideFlag
-    RTS
-.endproc
-
-.proc collisionOnPolygonY
-    LDA collideY
-    LDX #02
-    CMP collisionPolygonOneY, x
-    BCS collisionNo
-    BCC collisionYes
-collisionYes:
-    LDA #%00000011
-    STA collideFlag
-    RTS
-collisionNo:
-    LDA #%00000000
-    STA collideFlag
+collisionOnMapLabel:
+    JSR collisionOnMap
     RTS
 .endproc
 
 .proc collisionOnMapRight
-    JSR collisionOnPolygonX
+    LDA heroYCoordinate
+    CLC
+    ADC #17
+    STA collideY
+
+    LDA heroXCoordinate
+    CLC
+    ADC scrollPosition
+    ADC #1
+    STA collideX
+
+    JSR collisionOnMap
+    RTS
+.endproc
+
+.proc collisionOnMapUp
+    LDA heroYCoordinate
+    CLC
+    ADC #16
+    STA collideY
+
+    LDA heroXCoordinate
+    CLC
+    ADC scrollPosition
+    STA collideX
+
+    JSR collisionOnMap
     RTS
 .endproc
 
 .proc collisionOnMapDown
-    LDY collideY
-    LDX #03
-    TYA
-    CMP collisionRectangle, x
-    BCS collisionNo
-    BCC collisionYes
-collisionYes:
-    LDA #%00000011
-    STA collideFlag
-    RTS
-collisionNo:
-    LDA #%00000000
-    STA collideFlag
+    LDA heroYCoordinate
+    CLC
+    ADC #17
+    STA collideY
+
+    LDA heroXCoordinate
+    CLC
+    ADC scrollPosition
+    STA collideX
+
+    JSR collisionOnMap
     RTS
 .endproc

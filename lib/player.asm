@@ -27,6 +27,9 @@
   sta frameCountPlayerRightWalk
   lda #00
   sta jumpHeight
+  LDA #00
+  STA collisionPart
+  STA isStageEnd
 
   rts
 .endproc
@@ -288,16 +291,7 @@ return:
 .endproc
 
 .proc heroDownWalk
-    LDA heroYCoordinate
-    CLC
-    ADC #16
-    STA collideY
-
-    LDA heroXCoordinate
-    STA collideX
-
     JSR collisionOnMapDown
-;    JSR collisionOnPolygonY
     LDA collideFlag
     CMP #%00000011
     BEQ incrementY
@@ -311,14 +305,6 @@ return:
 .endproc
 
 .proc heroUpWalk
-    LDA heroYCoordinate
-    CLC
-    ADC #16
-    STA collideY
-
-    LDA heroXCoordinate
-    STA collideX
-
     JSR collisionOnMapUp
     LDA collideFlag
     CMP #%00000011
