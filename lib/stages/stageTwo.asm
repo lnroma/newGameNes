@@ -1,10 +1,9 @@
-.segment "RODATA"
+.segment "CODE_3"
 
-levelPalete:
-    palette_data_stage_2:
+palette_data_stage_2:
             ; 00                        01              10              11
-      		.byt $31,$00,$10,$2D,  $31,$1D,$27,$37,  $10,$1D,$27,$10,  $31,$3F,$3c,$02   ;;background
-      		.byt $32,$10,$1A,$0F,  $32,$36,$17,$0F,  $10,$30,$21,$0F,  $32,$29,$05,$01   ;;sprite palette
+  .byt $31,$00,$10,$2D,  $31,$1D,$27,$37,  $10,$1D,$27,$10,  $31,$3F,$3c,$02   ;;background
+  .byt $32,$10,$1A,$0F,  $32,$36,$17,$0F,  $10,$30,$21,$0F,  $32,$29,$05,$01   ;;sprite palette
 
 map_level_2:
   .byt $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11, $11 ; 1
@@ -177,6 +176,64 @@ attributeTableLevel2Page3:
 
 .segment "CODE"
 
+.proc firstProcedureStageTwo
+    RTS
+.endproc
+
+;.proc changePrgToTwo
+;    LDA #%00000001
+;    JSR setPrgBank
+;    RTS
+;.endproc
+
+.proc stageTwoState
+    JSR incScrollCounter
+    JSR heroStateMovement
+    JSR screenFactoryTwo
+    JSR swapNametable
+    JSR drawNewAttribute
+    JSR drawNewCollumn
+    ; each time after write to ppu
+    JSR scrolling
+    JSR changeSpriteBuffer
+    JSR scrolling
+    ; read joy and player animation must be last run
+    JSR readJoyPad
+    JSR scrolling
+    JSR readJoyState
+    JSR scrolling
+    JSR playerHundler
+    ; always scrolling in last this interapt
+    JSR scrolling
+
+    RTS
+.endproc
+
+.proc resetStageTwo
+    ; change code page
+    LDA #%00000010
+    JSR setPrgBank
+    ; change chr page
+    LDA #$00
+    JSR changeChrZerro
+
+    JSR loadStageTwoBackground
+    JSR loadPaleteStageTwo
+
+    JSR loadBackground
+    JSR loadAttributePages
+    JSR fixScroll
+
+    RTS
+.endproc
+
+.proc changePrgToFirst
+    LDA #%00000000
+    JSR setPrgBank
+    RTS
+.endproc
+
+.segment "CODE"
 .proc screenFactoryTwo
 
     LDA scrollPosition

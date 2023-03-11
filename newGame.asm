@@ -1,4 +1,3 @@
-.debuginfo on
 .include "./lib/player.asm"
 .include "./lib/heroStates/heroWalkRight.asm"
 .include "./lib/heroStates/heroStayRight.asm"
@@ -17,12 +16,15 @@
 .include "./lib/stageFunctions.asm"
 .include "./lib/backgroundFunctions.asm"
 .include "./lib/heroStates/debugSquired.asm"
+.include "./lib/mapperFunctions.asm"
+.include "./lib/stages/startDisplay.asm"
+
 .segment "HEADER"
 	.byt "NES",$1A
-	.byt 1 				; 1 x 16kB PRG block.
-	.byt 1 				; 1 x 8kB CHR block.
-	.byt 1              ; 0 horizontal, 1 vertical mirror
-	.byt 1              ; mapper
+	.byt 8 				; 8 x 16kB PRG block. 128kb
+	.byt 16 				; 16 x 8kB CHR block. 128kb
+	.byt 17              ; 0 horizontal, 1 vertical mirror
+	.byt 02              ; mapper
 
 .segment "VECTORS"
 	.addr nmi_isr, reset, irq_isr
@@ -88,6 +90,8 @@
     isHeroStay: .res 1
     lastPositionY: .res 1
 
+    isLoadedFlags: .res 1
+
 .segment "BSS"
 
 .segment "RODATA"
@@ -110,30 +114,22 @@
 .endproc
 
 .proc nmi_isr
-     JSR incScrollCounter
-     JSR heroStateMovement
-     JSR screenFactoryTwo
-     JSR swapNametable
-     JSR drawNewAttribute
-     JSR drawNewCollumn
-     ; each time after write to ppu
-     JSR scrolling
-     JSR changeSpriteBuffer
-     JSR scrolling
-     ; read joy and player animation must be last run
-     JSR readJoyPad
-     JSR scrolling
-     JSR readJoyState
-     JSR scrolling
-     JSR playerHundler
-     ; always scrolling in last this interapt
-     JSR scrolling
-
-     RTI
+    JSR readJoyPad
+    LDA stageStates
+    BEQ loadStartDisplay
+    CMP #01
+    BEQ loadStageTwo
+loadStartDisplay:
+    JSR startDisplayState
+    JMP return
+loadStageTwo:
+    JSR stageTwoState
+return:
+    RTI
 .endproc
 
 .proc irq_isr
-     RTI
+    RTI
 .endproc
 
 .proc reset
@@ -146,16 +142,15 @@
     TXS     ; Стэк равен = $FF
     : BIT $2002
     BPL :-
+    ; reset mapper
+    JSR resetMapperProcedure
     JSR setHeroVar
-;    JSR loadPalete
     JSR setStageVar
-    ; @todo create state automat
-    JSR loadStageTwoBackground
-    JSR loadPaleteStageTwo
+    ; load display start
+    JSR loadDisplayStart
+;    JSR resetStageTwo
+;
 
-    JSR loadBackground
-    JSR loadAttributePages
-    JSR fixScroll
     JSR enableNMI
     JSR enableRender
 
@@ -165,13 +160,29 @@ mainLoop:
   RTI
 .endproc
 
+.segment "CODE_1"
+.segment "CODE_2"
+.segment "CODE_3"
+.segment "CODE_4"
+.segment "CODE_5"
+.segment "CODE_6"
+.segment "CODE_7"
 
 
 ; =====	CHR-ROM Pattern Tables =================================================
 
 ; ----- Pattern Table 0 --------------------------------------------------------
 
-.segment "CHR"
-
-	.incbin "test.chr"
-
+.segment "CHR0"
+	.incbin "test_1_1.chr"
+.segment "CHR1"
+    .incbin "test_1_2.chr"
+.segment "CHR2"
+	.incbin "test_2_1.chr"
+.segment "CHR3"
+    .incbin "test_2_2.chr"
+.segment "CHR4"
+    .incbin "test_3_1.chr" ; start display chr
+.segment "CHR5"
+    .incbin "test_3_2.chr" ; start display chr
+.segment "CHR_1"

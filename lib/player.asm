@@ -30,6 +30,8 @@
   LDA #00
   STA collisionPart
   STA isStageEnd
+  STA stageStates
+  STA isLoadedFlags
 
   rts
 .endproc
