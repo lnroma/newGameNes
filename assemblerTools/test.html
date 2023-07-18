@@ -1,0 +1,603 @@
+ADC #$argument
+69
+2
+---
+ADC $argument
+65
+2
+---
+ADC $argument,X
+75
+2
+---
+ADC $argument
+6D
+3
+---
+ADC $argument,X
+7D
+3
+---
+ADC $argument,Y
+79
+3
+---
+ADC ($argument,X)
+61
+2
+---
+ADC ($argument),Y
+71
+2
+---
+AND #$argument
+29
+2
+---
+AND $argument
+25
+2
+---
+AND $argument,X
+35
+2
+---
+AND $argument
+2D
+3
+---
+AND $argument,X
+3D
+3
+---
+AND $argument,Y
+39
+3
+---
+AND ($argument,X)
+21
+2
+---
+AND ($argument),Y
+31
+2
+---
+ASLA
+0A
+1
+---
+ASL $argument
+06
+2
+---
+ASL $argument,X
+16
+2
+---
+ASL $argument
+0E
+3
+---
+ASL $argument,X
+1E
+3
+---
+BCC $argument
+90
+2
+---
+BCS $argument
+B0
+2
+---
+BEQ $argument
+F0
+2
+---
+BIT $argument
+24
+2
+---
+BIT $argument
+2C
+3
+---
+BMI $argument
+30
+2
+---
+BNE $argument
+D0
+2
+---
+BPL $argument
+10
+2
+---
+BRK
+00
+1
+---
+BVC $argument
+50
+2
+---
+BVS $argument
+70
+2
+---
+CLC
+18
+1
+---
+CLD
+D8
+1
+---
+CLI
+58
+1
+---
+CLV
+B8
+1
+---
+CMP #$argument
+C9
+2
+---
+CMP $argument
+C5
+2
+---
+CMP $argument,X
+D5
+2
+---
+CMP $argument
+CD
+3
+---
+CMP $argument,X
+DD
+3
+---
+CMP $argument,Y
+D9
+3
+---
+CMP ($argument,X)
+C1
+2
+---
+CMP ($argument),Y
+D1
+2
+---
+CPX $argument
+E0
+2
+---
+CPX $argument
+E4
+2
+---
+CPX $argument
+EC
+3
+---
+CPY $argument
+C0
+2
+---
+CPY $argument
+C4
+2
+---
+CPY $argument
+CC
+3
+---
+DEC $argument
+C6
+2
+---
+DEC $argument,X
+D6
+2
+---
+DEC $argument
+CE
+3
+---
+DEC $argument,X
+DE
+3
+---
+DEX
+CA
+1
+---
+DEY
+88
+1
+---
+EOR #$argument
+49
+2
+---
+EOR $argument
+45
+2
+---
+EOR $argument,X
+55
+2
+---
+EOR $argument
+4D
+3
+---
+EOR $argument,X
+5D
+3
+---
+EOR $argument,Y
+59
+3
+---
+EOR ($argument,X)
+41
+2
+---
+EOR ($argument),Y
+51
+2
+---
+INC $argument
+E6
+2
+---
+INC $argument,X
+F6
+2
+---
+INC $argument
+EE
+3
+---
+INC $argument,X
+FE
+3
+---
+INX
+E8
+1
+---
+INY
+C8
+1
+---
+JMP $argument
+4C
+3
+---
+JMP ($argument)
+6C
+3
+---
+JSR $argument
+20
+3
+---
+LDA #$argument
+A9
+2
+---
+LDA $argument
+A5
+2
+---
+LDA $argument,X
+B5
+2
+---
+LDA $argument
+AD
+3
+---
+LDA $argument,X
+BD
+3
+---
+LDA $argument,Y
+B9
+3
+---
+LDA ($argument,X)
+A1
+2
+---
+LDA ($argument),Y
+B1
+2
+---
+LDX #$argument
+A2
+2
+---
+LDX $argument
+A6
+2
+---
+LDX $argument,Y
+B6
+2
+---
+LDX $argument
+AE
+3
+---
+LDX $argument,Y
+BE
+3
+---
+LDY #$argument
+A0
+2
+---
+LDY $argument
+A4
+2
+---
+LDY $argument,X
+B4
+2
+---
+LDY $argument
+AC
+3
+---
+LDY $argument,X
+BC
+3
+---
+LSRA
+4A
+1
+---
+LSR $argument
+46
+2
+---
+LSR $argument,X
+56
+2
+---
+LSR $argument
+4E
+3
+---
+LSR $argument,X
+5E
+3
+---
+NOP
+EA
+1
+---
+ORA #$argument
+09
+2
+---
+ORA $argument
+05
+2
+---
+ORA $argument,X
+15
+2
+---
+ORA $argument
+0D
+3
+---
+ORA $argument,X
+1D
+3
+---
+ORA $argument,Y
+19
+3
+---
+ORA ($argument,X)
+01
+2
+---
+ORA ($argument),Y
+11
+2
+---
+PHA
+48
+1
+---
+PHP
+08
+1
+---
+PLA
+68
+1
+---
+PLP
+28
+1
+---
+ROLA
+2A
+1
+---
+ROL $argument
+26
+2
+---
+ROL $argument,X
+36
+2
+---
+ROL $argument
+2E
+3
+---
+ROL $argument,X
+3E
+3
+---
+RORA
+6A
+1
+---
+ROR $argument
+66
+2
+---
+ROR $argument,X
+76
+2
+---
+ROR $argument
+6E
+3
+---
+ROR $argument,X
+7E
+3
+---
+RTI
+40
+1
+---
+RTS
+60
+1
+---
+SBC #$argument
+E9
+2
+---
+SBC $argument
+E5
+2
+---
+SBC $argument,X
+F5
+2
+---
+SBC $argument
+ED
+3
+---
+SBC $argument,X
+FD
+3
+---
+SBC $argument,Y
+F9
+3
+---
+SBC ($argument,X)
+E1
+2
+---
+SBC ($argument),Y
+F1
+2
+---
+SEC
+38
+1
+---
+SED
+F8
+1
+---
+SEI
+78
+1
+---
+STA $argument
+85
+2
+---
+STA $argument,X
+95
+2
+---
+STA $argument
+8D
+3
+---
+STA $argument,X
+9D
+3
+---
+STA $argument,Y
+99
+3
+---
+STA ($argument,X)
+81
+2
+---
+STA ($argument),Y
+91
+2
+---
+STX $argument
+86
+2
+---
+STX $argument,Y
+96
+2
+---
+STX $argument
+8E
+3
+---
+STY $argument
+84
+2
+---
+STY $argument,X
+94
+2
+---
+STY $argument
+8C
+3
+---
+TAX
+AA
+1
+---
+TAY
+A8
+1
+---
+TSX
+BA
+1
+---
+TXA
+8A
+1
+---
+TXS
+9A
+1
+---
+TYA
+98
+1

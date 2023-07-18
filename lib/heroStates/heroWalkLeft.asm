@@ -1,42 +1,43 @@
 .segment "ZEROPAGE"
   LeftFrameCountPlayerRightWalk: .res 1;
+  animateCounter: .res 1;
 
 .segment "RODATA"
    leftFrameSprites:
-      .byt $33
-      .byt $02, $03
-      .byt $12, $13
-      .byt $22, $23
+      .byt $03, $02
+      .byt $13, $12
+      .byt $23, $22
+      .byt $33, $32
 
    leftFrame2Sprites:
-      .byt $33
-      .byt $02, $03
-      .byt $14, $15
-      .byt $24, $25
+      .byt $03, $02
+      .byt $13, $12
+      .byt $05, $04
+      .byt $15, $14
 
    leftFrame3Sprites:
-      .byt $33
-      .byt $02, $03
-      .byt $16, $17
-      .byt $26, $27
+      .byt $03, $02
+      .byt $13, $12
+      .byt $25, $24
+      .byt $15, $14
 
    leftFrameAttributes:
-      .byt %01000110
-      .byt %01000111, %01000111
-      .byt %01000111, %01000111
-      .byt %01000111, %01000111
+    .byt %01010110, %01010110
+    .byt %01010110, %01010110
+    .byt %01010101, %01010101
+    .byt %01010101, %01010101
 
    leftFrameOffsetX:
-      .byt $02
-      .byt $08, $00
-      .byt $08, $00
-      .byt $08, $00
+      .byt $08, $10
+      .byt $08, $10
+      .byt $08, $10
+      .byt $08, $10
 
    leftFrameOffsetY:
-      .byt $00
       .byt $00, $00
       .byt $08, $08
       .byt $10, $10
+      .byt $18, $18
 
 .segment "CODE"
 
@@ -66,13 +67,16 @@
 .endproc
 
 .proc drawHeroLeft
-    LDA scrollCounter
-    AND #8
-    CMP #1
+    JSR frameCounterProc
+    JSR resetFrameCounterProc
+
+    LDA frameCounter
     BEQ drawLeftFrame1Label
-    AND #8
+    CMP #01
     BEQ drawLeftFrame2Label
-    AND #10
+    CMP #02
+    BEQ drawLeftFrame1Label
+    CMP #03
     BEQ drawLeftFrame3Label
 
   drawLeftFrame1Label:
@@ -137,9 +141,9 @@
 .proc drawLeftFrame3
     JSR commonInitFrameLeft
 
-    LDA #<leftFrame2Sprites
+    LDA #<leftFrame3Sprites
     STA frameSpritesLB
-    LDA #>leftFrame2Sprites
+    LDA #>leftFrame3Sprites
     STA frameSpritesHB
 
     JSR drawFrame

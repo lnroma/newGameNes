@@ -1,0 +1,8 @@
+{
+  "filename": "newGame.nesproj",
+  "filepath": "/Users/roman/nes_asm/nesExample/newGame/newGame.nesproj",
+  "bank": 1,
+  "nametable": "/Users/roman/nes_asm/nesExample/newGame/newGame.nam",
+  "tileset": "/Users/roman/nes_asm/nesExample/newGame/test4.chr",
+  "palettes": "/Users/roman/nes_asm/nesExample/newGame/newGame.pal"
+}

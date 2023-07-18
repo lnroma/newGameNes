@@ -8,6 +8,11 @@ BreakPoint: startAddr=00000C20  endAddr=00000000  flags=ER--X-  condition=""  de
 BreakPoint: startAddr=00000BFB  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
 BreakPoint: startAddr=00000BEC  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
 BreakPoint: startAddr=00000BCD  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
-BreakPoint: startAddr=0001D0FA  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
+BreakPoint: startAddr=0001D116  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
+BreakPoint: startAddr=0001D144  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
+BreakPoint: startAddr=0001D146  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
+BreakPoint: startAddr=0001D141  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
+BreakPoint: startAddr=0001C26E  endAddr=00000000  flags=ER--X-  condition=""  desc="" 
+Bookmark: addr=0036  desc="soldairX" 
 Bookmark: addr=804A  desc="" 
 Bookmark: addr=8DF3  desc="check collision" 

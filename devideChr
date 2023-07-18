@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mv test_1_1.chr t11.chr
+mv test_1_2.chr t12.chr
+split -b4096 t54.chr
+mv xaa test_1_1.chr
+mv xab test_1_2.chr
+#./compile

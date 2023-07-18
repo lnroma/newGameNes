@@ -1,17 +1,34 @@
+.segment "ZEROPAGE"
+    tmpSBC: .res 1
+    highBackground: .res 1
+    lowBackground: .res 1
+    loadedFlag: .res 1
+    indYBack: .res 1
+    indXBack: .res 1
+
 .segment "RODATA"
 
 .segment "CODE"
 
 .proc firstProcBackground
+   LDA #$20
+   STA highBackground
+   LDA #$00
+   STA lowBackground
+   STA indXBack
+   STA indYBack
+   LDA #$01
+   STA loadedFlag
+
    RTS
 .endproc
 
 .proc loadBackground
     LoadBackground:
       LDA $2002             ; read PPU status to reset the high/low latch
-      LDA #$20
+      LDA highBackground
       STA $2006             ; write the high byte of $2000 address
-      LDA #$00
+      LDA lowBackground
       STA $2006             ; write the low byte of $2000 address
 
       LDX #$00            ; start at pointer + 0
@@ -35,6 +52,57 @@
       RTS
 .endproc
 
+.proc loadBackgroundAnimated
+    LDA loadedFlag
+    BEQ returnLoad
+    BNE continueLoad
+    returnLoad:
+        RTS
+    continueLoad:
+        LDA nmiCounter
+        BNE returnByCounter
+        BEQ continueLoadAfterCounter
+    returnByCounter:
+        RTS
+    continueLoadAfterCounter:
+        LDA $2002             ; read PPU status to reset the high/low latch
+        LDA highBackground
+        STA $2006             ; write the high byte of $2000 address
+        LDA lowBackground
+        STA $2006
+
+        LDY indYBack
+        LDA (mapLoByte), y
+        STA $2007
+        INC indYBack
+        INC lowBackground
+        CPY #$FF
+        BEQ incX
+        BNE return
+    incX:
+        INC mapHiByte
+        INC highBackground
+    return:
+        RTS
+.endproc
+
+.proc delay
+    PHA
+    TXA
+    PHA
+
+    LDX #$FF
+    decX:
+    DEX
+    BNE decX
+
+    PLA
+    TAX
+    PLA
+
+    RTS
+.endproc
+
 .proc loadAttributePages    
   LoadAttributePage1:
     lda $2002
@@ -43,28 +111,28 @@
     lda #$C0
     sta $2006
 
-    ldx #00
+    ldy #00
   AttributePage1Loop:
-    lda attributeTableLevel2Page1, x
+    lda (lAB), y
     sta $2007
-    inx
-    cpx #66
+    iny
+    cpy #66
     bne AttributePage1Loop
-
-  LoadAttributePage2:
-    lda $2002
-    lda #$27
-    sta $2006
-    lda #$C0
-    sta $2006
-
-    ldx #00
-  AttributePage2Loop:
-    lda attributeTableLevel2Page1, x
-    sta $2007
-    inx
-    cpx #66
-    bne AttributePage2Loop
+;
+;  LoadAttributePage2:
+;    lda $2002
+;    lda #$27
+;    sta $2006
+;    lda #$C0
+;    sta $2006
+;
+;    ldx #00
+;  AttributePage2Loop:
+;    lda (lAB), x
+;    sta $2007
+;    inx
+;    cpx #66
+;    bne AttributePage2Loop
 
     RTS
 .endproc

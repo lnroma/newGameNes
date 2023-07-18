@@ -13,43 +13,44 @@
 
   frameOffsetsYLB: .res 1
   frameOffsetsYHB: .res 1
+  frameCounter: .res 1
 
 .segment "RODATA"
    frame1_sprites:
-      .byt $33
       .byt $02, $03
       .byt $12, $13
       .byt $22, $23
+      .byt $32, $33
 
    frame2_sprites:
-      .byt $33
       .byt $02, $03
+      .byt $12, $13
+      .byt $04, $05
       .byt $14, $15
-      .byt $24, $25
 
    frame3_sprites:
-      .byt $33
       .byt $02, $03
-      .byt $16, $17
-      .byt $26, $27
+      .byt $12, $13
+      .byt $24, $25
+      .byt $14, $15
 
    frame_attributes:
-      .byt %00010110
-      .byt %00010111, %00010111
-      .byt %00010111, %00010111
-      .byt %00010111, %00010111
+    .byt %00010110, %00010110
+    .byt %00010110, %00010110
+    .byt %00010101, %00010101
+    .byt %00010101, %00010101
 
    frame_offset_x:
-      .byt $06
+      .byt $00, $08
       .byt $00, $08
       .byt $00, $08
       .byt $00, $08
 
    frame_offset_y:
-      .byt $00
       .byt $00, $00
       .byt $08, $08
       .byt $10, $10
+      .byt $18, $18
 
 .segment "CODE"
 
@@ -111,15 +112,40 @@
     RTS
 .endproc
 
+.proc frameCounterProc
+    LDA nmiCounter
+    BEQ incrementFrameCounter
+    BNE return
+incrementFrameCounter:
+    INC frameCounter
+return:
+    RTS
+.endproc
+
+.proc resetFrameCounterProc
+    LDA frameCounter
+    CMP #04
+    BEQ reset
+    BNE return
+reset:
+    LDA #$00
+    STA frameCounter
+return:
+    RTS
+.endproc
+
 .proc drawHeroRightWalk
     JSR commonInitFrame
-    LDA scrollCounter
-    AND #8
-    CMP #1
+    JSR frameCounterProc
+    JSR resetFrameCounterProc
+
+    LDA frameCounter
     BEQ drawFrame1Label
-    CMP #8
+    CMP #01
     BEQ drawFrame2Label
-    CMP #10
+    CMP #02
+    BEQ drawFrame1Label
+    CMP #03
     BEQ drawFrame3Label
 
   drawFrame1Label:
@@ -157,7 +183,7 @@
         STA $0200, x
         INX
         INY
-        CPY #07
+        CPY #08
         BNE frameDrawLoop
 
     RTS

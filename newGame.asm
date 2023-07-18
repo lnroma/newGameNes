@@ -18,6 +18,18 @@
 .include "./lib/heroStates/debugSquired.asm"
 .include "./lib/mapperFunctions.asm"
 .include "./lib/stages/startDisplay.asm"
+.include "./lib/employers/soldairRight.asm"
+.include "./lib/employers/soldairLeft.asm"
+.include "./lib/employers/movements/soldair.asm"
+.include "./lib/heroStates/heroFireLeft.asm"
+.include "./lib/heroStates/heroFireRight.asm"
+
+.macro nmiDelay frames
+    lda #frames
+    sta nmiCounter
+:   lda nmiCounter
+    bne :-
+.endmacro
 
 .segment "HEADER"
 	.byt "NES",$1A
@@ -54,6 +66,7 @@
     columnNumber: .res 1;
 
     scrollPosition: .res 1;
+    yScrollPosition: .res 1;
     nameTable: .res 1;
     screenCount: .res 1;
 
@@ -91,7 +104,9 @@
     lastPositionY: .res 1
 
     isLoadedFlags: .res 1
+    nmiCounter: .res 1
 
+    byteBufferCounter: .res 1
 .segment "BSS"
 
 .segment "RODATA"
@@ -113,7 +128,35 @@
     RTS
 .endproc
 
+.proc waitDelay
+    nmiDelay 4
+    RTS
+.endproc
+
+.proc resetCounter
+    LDA nmiCounter
+;    AND #60
+    BNE reset
+    BEQ return
+reset:
+    LDA #$00
+    STA nmiCounter
+return:
+    RTS
+.endproc
+
 .proc nmi_isr
+;    JSR delayCounterIncrement
+    INC nmiCounter
+    LDA nmiCounter
+    CMP #$10
+    BEQ resetCounter
+    JMP continue
+resetCounter:
+    LDA #$00
+    STA nmiCounter
+;    JSR resetCounter
+continue:
     JSR readJoyPad
     LDA stageStates
     BEQ loadStartDisplay
@@ -125,7 +168,19 @@ loadStartDisplay:
 loadStageTwo:
     JSR stageTwoState
 return:
+   ; JSR clearSprites
     RTI
+.endproc
+
+.proc clearSprites
+    LDX #$00
+    LDA #$00
+    clearLoop:
+    STA $0200, x
+    CPX #$FF
+    INX
+    BNE clearLoop
+    RTS
 .endproc
 
 .proc irq_isr
@@ -146,11 +201,13 @@ return:
     JSR resetMapperProcedure
     JSR setHeroVar
     JSR setStageVar
+
+    ; reset sprite buffer counter
+    LDA #$00
+    STA byteBufferCounter
+
     ; load display start
     JSR loadDisplayStart
-;    JSR resetStageTwo
-;
-
     JSR enableNMI
     JSR enableRender
 

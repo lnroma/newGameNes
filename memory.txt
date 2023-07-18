@@ -1,0 +1,8 @@
+sprite mask:
+76543210
+||||||||
+||||||++- Palette (4 to 7) of sprite
+|||+++--- Unimplemented
+||+------ Priority (0: in front of background; 1: behind background)
+|+------- Flip sprite horizontally
++-------- Flip sprite vertically
