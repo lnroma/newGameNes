@@ -15,7 +15,7 @@
   frameOffsetsYHB: .res 1
   frameCounter: .res 1
 
-.segment "RODATA"
+.segment "CODE"
    frame1_sprites:
       .byt $02, $03
       .byt $12, $13
@@ -34,19 +34,19 @@
       .byt $24, $25
       .byt $14, $15
 
-   frame_attributes:
+   rightFrameAttributes:
     .byt %00010110, %00010110
     .byt %00010110, %00010110
     .byt %00010101, %00010101
     .byt %00010101, %00010101
 
-   frame_offset_x:
+   rightFrameOffsetX:
       .byt $00, $08
       .byt $00, $08
       .byt $00, $08
       .byt $00, $08
 
-   frame_offset_y:
+   rightFrameOffsetY:
       .byt $00, $00
       .byt $08, $08
       .byt $10, $10
@@ -77,6 +77,8 @@
 .endproc
 
 .proc heroRightWalkStandard
+    INC scrollPosition
+    RTS
     LDA heroYCoordinate
     STA collideY
 
@@ -134,7 +136,12 @@ return:
     RTS
 .endproc
 
+.segment "CODE"
+
 .proc drawHeroRightWalk
+    LDX #$09
+    JSR setPrgBank
+
     JSR commonInitFrame
     JSR frameCounterProc
     JSR resetFrameCounterProc
@@ -162,78 +169,67 @@ return:
     RTS
 .endproc
 
-.proc drawFrame
-    LDX #00
-    LDY #00
-    frameDrawLoop:
-        LDA heroYCoordinate
-        CLC
-        ADC (frameOffsetsYLB), y
-        STA $0200, x
-        LDA (frameSpritesLB), y
-        INX
-        STA $0200, x
-        LDA (frameAttributesLB), y
-        INX
-        STA $0200, x
-        LDA heroXCoordinate
-        CLC
-        ADC (frameOffsetsXLB), y
-        INX
-        STA $0200, x
-        INX
-        INY
-        CPY #08
-        BNE frameDrawLoop
-
-    RTS
-.endproc
-
 .proc commonInitFrame
-    LDA #<frame_attributes
-    STA frameAttributesLB
-    LDA #>frame_attributes
-    STA frameAttributesHB
 
-    LDA #<frame_offset_x
-    STA frameOffsetsXLB
-    LDA #>frame_offset_x
-    STA frameOffsetsXHB
+    LDA heroYCoordinate
+    STA tempY
 
-    LDA #<frame_offset_y
-    STA frameOffsetsYLB
-    LDA #>frame_offset_y
-    STA frameOffsetsYHB
+    LDA heroXCoordinate
+    STA tempX
+
+    LDA #<rightFrameOffsetX
+    STA offsetXLB
+    LDA #>rightFrameOffsetX
+    STA offsetXHB
+
+    LDA #<rightFrameOffsetY
+    STA offsetYLB
+    LDA #>rightFrameOffsetY
+    STA offsetYHB
+
+    LDA #<rightFrameAttributes
+    STA attributeLB
+    LDA #>rightFrameAttributes
+    STA attributeHB
 
     RTS
 .endproc
 
 .proc drawFrame1
     LDA #<frame1_sprites
-    STA frameSpritesLB
+    STA objectLB
     LDA #>frame1_sprites
-    STA frameSpritesHB
+    STA objectHB
 
-    JSR drawFrame
+    LDA #08
+    STA loopCount
+
+    JSR drawFramePPU
     RTS
 .endproc
 
 .proc drawFrame2
     LDA #<frame2_sprites
-    STA frameSpritesLB
+    STA objectLB
     LDA #>frame2_sprites
-    STA frameSpritesHB
+    STA objectHB
 
-    JSR drawFrame
+    LDA #08
+    STA loopCount
+
+    JSR drawFramePPU
     RTS
 .endproc
 
 .proc drawFrame3
     LDA #<frame3_sprites
-    STA frameSpritesLB
+    STA objectLB
     LDA #>frame3_sprites
-    STA frameSpritesHB
+    STA objectHB
 
-    JSR drawFrame
+    LDA #08
+    STA loopCount
+
+    JSR drawFramePPU
     RTS
 .endproc

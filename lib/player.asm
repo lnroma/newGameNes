@@ -1,9 +1,7 @@
 .segment "ZEROPAGE"
-    isBullet: .res 1
-
-.segment "RODATA"
-  lifesBytes: 
-	.byt $00, $08, $10, $17
+    isFireStay: .res 1
+    tmpA: .res 1
+    flagButtonBPress: .res 1
 
 .segment "CODE"
 
@@ -11,18 +9,34 @@
     RTS
 .endproc
 
+.proc initBullet
+    ldx #$00
+    stx bulletFlag
+    stx bulletCounter
+
+    ldx #00
+    ldy #00
+    resetIsBullet:
+        sty isBullet, x
+        inx
+        cpx #$03
+        bne resetIsBullet
+
+    rts
+.endproc
+
 .proc setHeroVar
+  LDA #$00
+  STA flagButtonBPress
+
   lda #100
   sta heroXCoordinate
   lda #$00
   sta buttons
   sta offsetColumn
-  lda #200
+  lda #140
   sta heroYCoordinate
-  ldx #$00
-  stx bulletCounter
-  sta bulletX, x
-  sta bulletY, x
+  JSR initBullet
   sta lastPositionY
   lda #04
   sta lifes
@@ -38,6 +52,8 @@
   STA stageStates
   STA isLoadedFlags
   STA isBullet
+  STA counterFrames
+  STA isFireStay
 
   rts
 .endproc
@@ -59,32 +75,20 @@
    RTS
 .endproc
 
-.proc scrolling
-  PHA
-  LDA scrollPosition
-  STA $2005
-  LDA #$00
-  STA $2005
-  PLA
-  RTS
+.proc resetScroll
+    LDA #$00
+    STA $2005
+    STA $2005
+
+    RTS
 .endproc
 
-.proc drawLifes
-  LDX lifes
-  lifeLoop:
-    LDA #10
-    STA $2004
-    LDA #06
-    STA $2004
-    LDA #%00010111
-    STA $2004
-    LDA lifesBytes, x
-    ADC #10
-    STA $2004
-    DEX
-    BNE lifeLoop
-
-  RTS
+.proc scrolling
+    LDA scrollPosition
+    STA $2005
+    LDA #$00
+    STA $2005
+    RTS
 .endproc
 
 .proc playerGravity
@@ -122,6 +126,7 @@ return:
    JSR unsetHeroFire
    JSR unsetHeroStay
    JSR unsetHeroWalk
+   JSR unsetStayFire
 
    LDX joyState
    JSR handleDirections
@@ -129,14 +134,16 @@ return:
 .endproc
 
 .proc handleFireAndJump
-   CPX #%00000010
-   BEQ heroJump
-   CPX #%10000010
-   BEQ walkAndJumpRight
    CPX #%00000001
+   BEQ heroJump
+  ; CPX #%10000010
+  ; BEQ walkAndJumpRight
+   CPX #%00000010
    BEQ fireLabel
-   ;CPX #%01000001
-   ;BEQ walkAndFireLeft
+   CPX #%01000010
+   BEQ walkAndFireLeft
+   CPX #%10000010
+   BEQ walkAndFireRight
    CPX #%01000010
    BEQ walkAndJumpLeft
 
@@ -158,12 +165,37 @@ return:
         JSR setHeroLeft
         RTS
    fireLabel:
-        JSR FireRightProc
+        LDA #01
+        STA isFireStay
+        LDA #00
+        STA isHeroStay
+        STA isHeroWalk
+
+        JSR setIsFire
+
+        LDA #$01
+        STA flagButtonBPress
+
         RTS
    walkAndFireLeft:
         JSR setIsFire
+        JSR setHeroWalk
         JSR heroLeftWalk
         JSR setHeroLeft
+
+        LDA #$01
+        STA flagButtonBPress
+
+        RTS
+   walkAndFireRight:
+        JSR setIsFire
+        JSR setHeroWalk
+        JSR heroRightWalk
+        JSR setHeroRight
+
+        LDA #$01
+        STA flagButtonBPress
+
         RTS
    walkAndJumpAndFireRight:
         JSR jumpAndFire
@@ -173,6 +205,10 @@ return:
         RTS
    heroFire:
         JSR setIsFire
+
+        LDA #$01
+        STA flagButtonBPress
+
         RTS
 .endproc
 
@@ -195,6 +231,7 @@ return:
     BEQ walkUp
 
     JSR handleFireAndJump
+
     RTS
 
     heroWalkLeftAndUp:
@@ -224,76 +261,11 @@ return:
 .endproc
 
 .proc heroWalkLeftProc
+    JSR heroLeftWalk
     JSR setHeroLeft
     JSR setHeroWalk
-    JSR heroLeftWalk
 
     RTS
-.endproc
-
-.proc initBulletCoordinate
-    JSR bulletCounter
-    LDA isBullet
-    BEQ bulletInit
-    RTS
-bulletInit:
-    LDA heroXCoordinate
-    STA bulletX
-    LDA heroYCoordinate
-    CLC
-    ADC #$0C
-    STA bulletY
-
-    RTS
-.endproc
-
-.proc bulletCounterProcedure
-    LDA bulletCounter
-    CMP #$03
-    BNE return
-    BEQ bulletCounterReset
-    bulletCounterReset:
-        LDA #$00
-        STA bulletCounter
-    return:
-        RTS
-.endproc
-
-.proc resetBullet
-;    LDA bulletX
-;    CMP #$CC
-;    BEQ reset
-;    BNE return
-;reset:
-    LDA #00
-    STA isBullet
-    RTS
-;return:
-;    RTS
-.endproc
-
-.proc FireRightProc
-    ; @todo bullet init procedure
-    ;JSR initBulletCoordinate
-    LDA heroDirection
-    CMP #01
-    BEQ drawFireLeftLabel
-    BNE drawFireRightLabel
-
-    drawFireLeftLabel:
-        LDA #01
-        STA isBullet
-        INC bulletCounter
-        JSR drawFireLeft
-        RTS
-    drawFireRightLabel:
-        LDA #01
-        STA isBullet
-        INC bulletCounter
-        JSR drawFireRight
-        RTS
-
-    ;JSR drawFireLeft
 .endproc
 
 .proc heroWalkRightProc
@@ -301,6 +273,50 @@ bulletInit:
     JSR setHeroRight
     JSR setHeroWalk
 
+    RTS
+.endproc
+
+.proc initBulletCoordinate
+    RTS
+    LDA isBullet
+    BEQ bulletInit
+    RTS
+bulletInit:
+    LDX bulletCounter
+    CPX #04
+    BNE  return
+    BEQ continue
+
+continue:
+    LDX #$01
+    LDA heroXCoordinate
+    STA bulletX
+    LDA heroYCoordinate
+    CLC
+    ADC #$0C
+    STA bulletY
+
+return:
+    RTS
+.endproc
+
+.proc resetBullet
+    LDA #00
+    STA isBullet
+    RTS
+.endproc
+
+.proc incBulletCounter
+    LDA flagButtonBPress
+    BNE return
+    LDA frameCounter
+    LDA bulletCounter
+    CMP #$03
+    BEQ return
+    BNE increment
+increment:
+    INC bulletCounter
+return:
     RTS
 .endproc
 
@@ -433,41 +449,32 @@ bulletInit:
     JSR heroJumpAnimation
     JSR heroWalkAnimation
     JSR heroStayAnimation
-
-;    JSR drawBullet
+    JSR heroFireAnimation
+    JSR drawAndAnimatedBullet
+    JSR checkCollideBulletScreen
+   ; JSR checkCollideBulletEnemy
 
     RTS
 .endproc
 
 .proc drawAndAnimatedBullet
-    LDA isBullet
-    BEQ return
-    BNE drawBulletLabel
-    drawBulletLabel:
-        LDX #00
-        ;INC bulletX, x
-        ;INC bulletX, x
-        ;INC bulletX, x
-        INC bulletX, x
-        JSR drawBullet
-    return:
-        JSR checkCollisionBullet
-        RTS
-.endproc
+    LDX #$00
+    loopIncrementBulletX:
+        LDA isBullet, x
+        BEQ skipIncrement
+        BNE increment
 
-.proc checkCollisionBullet
-    LDA bulletX
-    CMP #$F8
-    BCS resetBulletCoordinate
-    RTS
-resetBulletCoordinate:
-    LDA heroXCoordinate
-    STA bulletX
-    LDA heroYCoordinate
-    STA bulletY
-    LDA #$00
-    STA isBullet
-    JSR clearBullet
+        increment:
+            INC bulletX, x
+            INC bulletX, x
+            INC bulletX, x
+
+        skipIncrement:
+            INX
+            CPX #$03
+            BNE loopIncrementBulletX
+
+    JSR drawBullet
 
     RTS
 .endproc
@@ -497,7 +504,7 @@ resetBulletCoordinate:
         BEQ drawHeroWalkAndFireLeft
         BNE drawHeroWalkAndFireRight
     drawHeroWalkAndFireRight:
-        JSR drawHeroRightWalkFire
+        JSR drawHeroRightAndFire
         RTS
     drawHeroWalkAndFireLeft:
         JSR drawHeroLeftAndFire
@@ -510,6 +517,7 @@ resetBulletCoordinate:
         BNE drawHeroWalkRight
     drawHeroWalkRight:
         JSR drawHeroRightWalk
+        ;JSR drawFireRight
         RTS
     drawHeroWalkLeft:
         JSR drawHeroLeft
@@ -536,6 +544,72 @@ resetBulletCoordinate:
             RTS
     return:
         RTS
+.endproc
+
+.proc heroFireAnimation
+    LDA isFireStay
+    BEQ return
+    BNE checkDirection
+    checkDirection:
+        LDA heroDirection
+        CMP #01
+        BEQ drawStayFireLeftLabel
+        BNE drawStayFireRightLabel
+        drawStayFireLeftLabel:
+            JSR drawFireLeft
+            RTS
+        drawStayFireRightLabel:
+            JSR drawFireRight
+            RTS
+    return:
+        RTS
+.endproc
+
+.proc setIsBullet
+    LDA flagButtonBPress
+    BNE return
+
+    LDX bulletCounter
+    CPX #$03
+    BEQ return
+
+    LDA heroXCoordinate
+    CLC
+    ADC #$0F
+    STA bulletX, x
+    LDA heroYCoordinate
+    CLC
+    ADC #$0D
+    STA bulletY, x
+
+    LDA #$01
+    STA isBullet, x
+return:
+    RTS
+.endproc
+
+.proc checkCollideBulletScreen
+    LDX #$00
+    loopCounter:
+        LDY bulletX, x
+        CPY #$FC
+        BCS unsetBullet
+        BNE skip
+        unsetBullet:
+            LDY #$00
+            STY isBullet, x
+            STY bulletX, x
+            STY bulletY, x
+
+            LDA bulletCounter
+            BEQ skip
+            DEC bulletCounter
+        skip:
+        INX
+        CPX #$03
+        BNE loopCounter
+
+    RTS
 .endproc
 
 .proc heroJumpAnimation
@@ -591,12 +665,24 @@ resetBulletCoordinate:
 .proc setIsFire
     LDA #01
     STA isHeroFire
+
+    JSR setIsBullet
+    JSR incBulletCounter
+
     RTS
 .endproc
 
 .proc unsetHeroFire
     LDA #00
     STA isHeroFire
+
+    RTS
+.endproc
+
+.proc unsetStayFire
+    LDA #$00
+    STA isFireStay
+
     RTS
 .endproc
 

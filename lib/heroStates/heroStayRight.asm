@@ -1,4 +1,4 @@
-.segment "RODATA"
+.segment "CODE"
 
 stayRight:
     .byt $00, $01
@@ -22,39 +22,42 @@ stayRightAttributes:
     .byt %00010101, %00010101
     .byt %00010101, %00010101
 
-.segment "CODE"
-
 .proc heroStayFirstProc
   RTS
 .endproc
 
-.proc drawStayRight
-    JSR drawFrameStay
-    RTS
-.endproc
+.segment "CODE"
 
-.proc drawFrameStay
-    LDX #00
-    LDY #00
-    frameDrawLoop:
-        LDA heroYCoordinate
-        CLC
-        ADC stayRightOffsetsY, y
-        STA $0200, x
-        LDA stayRight, y
-        INX
-        STA $0200, x
-        LDA stayRightAttributes, y
-        INX
-        STA $0200, x
-        LDA heroXCoordinate
-        CLC
-        ADC stayRightOffsetsX, y
-        INX
-        STA $0200, x
-        INX
-        INY
-        CPY #08
-        BNE frameDrawLoop
+.proc drawStayRight
+    LDA heroYCoordinate
+    STA tempY
+
+    LDA heroXCoordinate
+    STA tempX
+
+    LDA #<stayRightOffsetsX
+    STA offsetXLB
+    LDA #>stayRightOffsetsX
+    STA offsetXHB
+
+    LDA #<stayRightOffsetsY
+    STA offsetYLB
+    LDA #>stayRightOffsetsY
+    STA offsetYHB
+
+    LDA #<stayRightAttributes
+    STA attributeLB
+    LDA #>stayRightAttributes
+    STA attributeHB
+
+    LDA #<stayRight
+    STA objectLB
+    LDA #>stayRight
+    STA objectHB
+
+    LDA #$08
+    STA loopCount
+
+    JSR drawFramePPU
     RTS
 .endproc

@@ -21,7 +21,7 @@
    collisionPart: .res 1
    isStageEnd: .res 1
 
-.segment "RODATA"
+.segment "CODE"
 
 bit_mask:
   .byt %10000000

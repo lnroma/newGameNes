@@ -1,8 +1,6 @@
 .segment "ZEROPAGE"
-    bulletX: .res 3
-    bulletY: .res 3
-    bulletCounter: .res 1
     changeAttribute: .res 1
+    counterFrames: .res 1
 
 .segment "CODE"
 
@@ -38,96 +36,38 @@ stayLeftFireAttributes:
 .endproc
 
 .proc drawFireLeft
-    JSR drawFrameFireLeft
-    RTS
-.endproc
+    LDX #$09
+    JSR setPrgBank
 
-.proc drawBullet
-    LDX #$01
-    LDA bulletY, x
-    STA $0230
-    LDA #$16
-    STA $0231
-    LDA #%01010111
-    STA $0232
-    LDA bulletX, x
-    STA $0233
+    LDA heroYCoordinate
+    STA tempY
 
-    RTS
-.endproc
+    LDA heroXCoordinate
+    STA tempX
 
-.proc clearBullet
-    LDA #$00
-    STA $021D
-    STA $021E
-    STA $021F
-    STA $0220
+    LDA #<stayLeftFireOffsetsX
+    STA offsetXLB
+    LDA #>stayLeftFireOffsetsX
+    STA offsetXHB
 
-    RTS
-.endproc
+    LDA #<stayLeftFireOffsetsY
+    STA offsetYLB
+    LDA #>stayLeftFireOffsetsY
+    STA offsetYHB
 
-.proc animateBullet
-    LDA nmiCounter
-    BEQ attributeChange
-attributeChange:
-    LDA changeAttribute
-    EOR #$01
-    STA changeAttribute
-    RTS
+    LDA #<stayLeftFireAttributes
+    STA attributeLB
+    LDA #>stayLeftFireAttributes
+    STA attributeHB
 
-    LDA changeAttribute
-    BEQ changeOne
-    BNE changeTwo
+    LDA #<stayLeftFire
+    STA objectLB
+    LDA #>stayLeftFire
+    STA objectHB
 
-    changeOne:
-        LDA #%01010110
-        RTS
-    changeTwo:
-        LDA #%01010111
-        RTS
-.endproc
+    LDA #$09
+    STA loopCount
 
-.proc drawFrameFireLeft
-    LDX #00
-    LDY #00
-    frameDrawLoop:
-        LDA heroYCoordinate
-        CLC
-        ADC stayLeftFireOffsetsY, y
-        STA $0200, x
-        LDA stayLeftFire, y
-        INX
-        STA $0200, x
-        LDA stayLeftFireAttributes, y
-        INX
-        STA $0200, x
-        LDA heroXCoordinate
-        CLC
-        ADC stayLeftFireOffsetsX, y
-        INX
-        STA $0200, x
-        INX
-        INY
-        CPY #09
-        BNE frameDrawLoop
-    RTS
-.endproc
-
-.proc clearFire
-    LDX #00
-    LDY #00
-    STX bulletCounter
-    frameDrawLoop:
-        LDA $00
-        STA $0200, x
-        INX
-        STA $0200, x
-        INX
-        STA $0200, x
-        INX
-        STA $0200, x
-        INX
-        CPY #09
-        BNE frameDrawLoop
+    JSR drawFramePPU
     RTS
 .endproc

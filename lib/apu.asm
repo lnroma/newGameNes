@@ -1,5 +1,5 @@
 
-.segment "RODATA"
+.segment "CODE"
 regs:
         .byt $30,$08,$00,$00
         .byt $30,$08,$00,$00

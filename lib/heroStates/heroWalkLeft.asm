@@ -2,7 +2,7 @@
   LeftFrameCountPlayerRightWalk: .res 1;
   animateCounter: .res 1;
 
-.segment "RODATA"
+.segment "CODE"
    leftFrameSprites:
       .byt $03, $02
       .byt $13, $12
@@ -46,19 +46,17 @@
 .endproc
 
 .proc heroLeftWalk
+    LDX #$09
+    JSR setPrgBank
+
+    DEC heroXCoordinate
+    RTS
+
     JSR collisionOnMapLeft
     LDA collideFlag
     CMP #%00000011
     BEQ decrementXCoordinate
     BNE return
-; todo dorabotat' esli geroy v levo idet do ekrana
-;  LDA scrollPosition
-;  CMP heroXCoordinate
-;  BCS stopDecrement
-;  BNE decrementX
-;  stopDecrement:
-;    RTS
-;  decrementX:
     decrementXCoordinate:
         DEC heroXCoordinate
     return:
@@ -94,20 +92,27 @@
 .endproc
 
 .proc commonInitFrameLeft
-    LDA #<leftFrameAttributes
-    STA frameAttributesLB
-    LDA #>leftFrameAttributes
-    STA frameAttributesHB
+    LDA heroYCoordinate
+    STA tempY
+
+    LDA heroXCoordinate
+    STA tempX
 
     LDA #<leftFrameOffsetX
-    STA frameOffsetsXLB
+    STA offsetXLB
     LDA #>leftFrameOffsetX
-    STA frameOffsetsXHB
+    STA offsetXHB
 
     LDA #<leftFrameOffsetY
-    STA frameOffsetsYLB
+    STA offsetYLB
     LDA #>leftFrameOffsetY
-    STA frameOffsetsYHB
+    STA offsetYHB
+
+    LDA #<leftFrameAttributes
+    STA attributeLB
+    LDA #>leftFrameAttributes
+    STA attributeHB
+
 
     RTS
 .endproc
@@ -116,11 +121,14 @@
     JSR commonInitFrameLeft
 
     LDA #<leftFrameSprites
-    STA frameSpritesLB
+    STA objectLB
     LDA #>leftFrameSprites
-    STA frameSpritesHB
+    STA objectHB
 
-    JSR drawFrame
+    LDA #$08
+    STA loopCount
+
+    JSR drawFramePPU
 
     RTS
 .endproc
@@ -129,11 +137,14 @@
     JSR commonInitFrameLeft
 
     LDA #<leftFrame2Sprites
-    STA frameSpritesLB
+    STA objectLB
     LDA #>leftFrame2Sprites
-    STA frameSpritesHB
+    STA objectHB
 
-    JSR drawFrame
+    LDA #$08
+    STA loopCount
+
+    JSR drawFramePPU
 
     RTS
 .endproc
@@ -142,11 +153,14 @@
     JSR commonInitFrameLeft
 
     LDA #<leftFrame3Sprites
-    STA frameSpritesLB
+    STA objectLB
     LDA #>leftFrame3Sprites
-    STA frameSpritesHB
+    STA objectHB
 
-    JSR drawFrame
+    LDA #$08
+    STA loopCount
+
+    JSR drawFramePPU
 
     RTS
 .endproc

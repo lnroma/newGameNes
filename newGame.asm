@@ -15,7 +15,6 @@
 .include "./lib/reset.asm"
 .include "./lib/stageFunctions.asm"
 .include "./lib/backgroundFunctions.asm"
-.include "./lib/heroStates/debugSquired.asm"
 .include "./lib/mapperFunctions.asm"
 .include "./lib/stages/startDisplay.asm"
 .include "./lib/employers/soldairRight.asm"
@@ -23,6 +22,10 @@
 .include "./lib/employers/movements/soldair.asm"
 .include "./lib/heroStates/heroFireLeft.asm"
 .include "./lib/heroStates/heroFireRight.asm"
+.include "./lib/heroStates/utils/bullet.asm"
+.include "./lib/ppuUtils.asm"
+.include "./lib/zeroSprite.asm"
+.include "./lib/statusBar/statusBar.asm"
 
 .macro nmiDelay frames
     lda #frames
@@ -31,15 +34,20 @@
     bne :-
 .endmacro
 
+MAPPER          = 4     ; 4 = MMC3, тут в варианте NES-TBROM (64Кб кода/данных + 64Кб графики)
+MIRRORING       = 0     ; зеркалирование видеопамяти: 0 - горизонтальное, 1 - вертикальное
+HAS_SRAM        = 0     ; 1 - есть SRAM (как правило на батарейке) по адресам $6000-7FFF
+
 .segment "HEADER"
-	.byt "NES",$1A
-	.byt 8 				; 8 x 16kB PRG block. 128kb
-	.byt 16 				; 16 x 8kB CHR block. 128kb
-	.byt 17              ; 0 horizontal, 1 vertical mirror
-	.byt 02              ; mapper
+    .byt "NES",$1A
+    .byt $08               ; 8 x 16kB PRG block. 128kb
+    .byt $10              ; 16 x 8kB CHR block. 128kb
+   ; .byt 17              ; 0 horizontal, 1 vertical mirror
+    .byt MIRRORING | (HAS_SRAM << 1) | ((MAPPER & $0F) << 4)
+    .byt $00, $00, $00, $00, $00, $00, $00, $00
 
 .segment "VECTORS"
-	.addr nmi_isr, reset, irq_isr
+    .addr nmi_isr, reset, irq_isr
 
 .segment "ZEROPAGE"
     heroXCoordinate: .res 1 ; координата x
@@ -107,12 +115,13 @@
     nmiCounter: .res 1
 
     byteBufferCounter: .res 1
+    lineCounter: .res 1
 .segment "BSS"
 
-.segment "RODATA"
+.segment "CODE";
 
-.segment "CODE"
-
+mmc3Register:
+    .byt $00 ,$02 ,$04 ,$05 , $06,$07 ,$00 ,$01
 
 .proc changeSpriteBuffer
      LDA #$00
@@ -146,7 +155,13 @@ return:
 .endproc
 
 .proc nmi_isr
-;    JSR delayCounterIncrement
+    LDA #$D0
+    STA $E000
+    STA $C000
+    STA $C001
+    STA $E000
+    STA $E001
+
     INC nmiCounter
     LDA nmiCounter
     CMP #$10
@@ -168,7 +183,9 @@ loadStartDisplay:
 loadStageTwo:
     JSR stageTwoState
 return:
-   ; JSR clearSprites
+    STA counterFrames
+    JSR clearSprites
+
     RTI
 .endproc
 
@@ -176,15 +193,85 @@ return:
     LDX #$00
     LDA #$00
     clearLoop:
-    STA $0200, x
-    CPX #$FF
-    INX
+        STA $0200, x
+        CPX #$FF
+        INX
     BNE clearLoop
     RTS
 .endproc
 
 .proc irq_isr
+    PHA
+    TXA
+    PHA
+    TYA
+    PHA
+
+    LDA #$00
+    STA $E000
+    STA $2005
+    STA $2005
+
+    PLA
+    TAY
+    PLA
+    TAX
+    PLA
+
     RTI
+.endproc
+
+.proc loadBanks
+        LDX #$08            ; Start of Page to load Add 8 Hex per CHR .. CHR 3 = $10 or 16
+        LDA #$80            ; Starting Address for $8000 0,1,2,3,4,5,6
+        LDY #$00            ; Loop Counter
+        LoadPPU2k:          ; load two sets 2x2k to make first 4k (BACKGROUND)
+            STA $8000       ; Bank Selection with Inversion
+            STX $8001       ; Selection of Bank
+            INY
+            INX             ; Increase X x 2 as 2k
+            INX
+            CLC
+            ADC #$01
+            CPY #$02        ; For loop
+            BNE LoadPPU2k
+        LoadPPU1k:              ; load 4 * 1k sets to make FORGROUND 4k
+            STA $8000           ; Bank Selection with Inversion
+            STX $8001           ; Selection of Bank
+            INY
+            INX                 ; Increase X * x as 1k
+            CLC
+            ADC #$01
+            CPY #$06        ; For loop
+            BNE LoadPPU1k
+    RTS
+.endproc
+
+.proc initMMC3
+    LDX #$00
+    LDA #$00
+    STA $E000       ; IRQ disable
+    STA $A000       ; mirroring 0 Vertical; 1 Horizontal
+    :
+    STX $8000       ; select register
+    LDA mmc3Register, X
+    STA $8001       ; initialize register
+    INX
+    CPX #8          ; Compare 8 to X
+    BCC :-          ; Branch not Equal
+
+    ;PRG ROM Selections
+
+        LDY #02            ; Starting Banks Change This from 0 2 4 6 ETC to change Starting Color Startup $00
+        LDA #6              ; $8000 Selection Bank = 6 (NOTE: Not HEX)
+        STA $8000
+        STY $8001           ; Select Bank LOW
+        LDA #7              ; $A000 Selection Bank = 6 (NOTE: Not HEX)
+        STA $8000
+        INY
+        STY $8001           ; Select Bank HIGH
+
+        rts
 .endproc
 
 .proc reset
@@ -197,20 +284,25 @@ return:
     TXS     ; Стэк равен = $FF
     : BIT $2002
     BPL :-
-    ; reset mapper
-    JSR resetMapperProcedure
+
+    JSR initMMC3
+    JSR loadBanks
+
     JSR setHeroVar
     JSR setStageVar
 
     ; reset sprite buffer counter
     LDA #$00
     STA byteBufferCounter
+    STA lineCounter
 
     ; load display start
     JSR loadDisplayStart
     JSR enableNMI
     JSR enableRender
-
+    LDA #$40
+    STA $4017
+    CLI
 mainLoop:
   JMP mainLoop
 
@@ -224,22 +316,15 @@ mainLoop:
 .segment "CODE_5"
 .segment "CODE_6"
 .segment "CODE_7"
+.segment "CODE_8"
+.segment "CODE_9"
+.segment "CODE_10"
+.segment "CODE_11"
+.segment "CODE_12"
+.segment "CODE_13"
 
 
 ; =====	CHR-ROM Pattern Tables =================================================
 
 ; ----- Pattern Table 0 --------------------------------------------------------
-
-.segment "CHR0"
-	.incbin "test_1_1.chr"
-.segment "CHR1"
-    .incbin "test_1_2.chr"
-.segment "CHR2"
-	.incbin "test_2_1.chr"
-.segment "CHR3"
-    .incbin "test_2_2.chr"
-.segment "CHR4"
-    .incbin "test_3_1.chr" ; start display chr
-.segment "CHR5"
-    .incbin "test_3_2.chr" ; start display chr
-.segment "CHR_1"
+.include "./graphics/mainChr.asm"

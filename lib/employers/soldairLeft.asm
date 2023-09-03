@@ -1,17 +1,15 @@
 .segment "ZEROPAGE"
     soldairX: .res 1
     soldairY: .res 1
+    isCollide: .res 1
 
     soldairDirection: .res 1
-
-    soldairLB: .res 1
-    soldairHB: .res 1
 
     tmpX: .res 1
     tmpY: .res 1
     frameCounterEmp: .res 1
 
-.segment "RODATA"
+.segment "CODE"
 
 empFrame0Left:
     .byt $71, $70
@@ -43,31 +41,76 @@ leftFrameOffsetSoldY:
       .byt $18, $18
       .byt $20, $20
 
-.segment "CODE"
+soldairMask:
+      .byt %01000000, %01000000
+      .byt %01000000, %01000000
+      .byt %01000000, %01000000
+      .byt %01000000, %01000000
 
 .proc showSoldier
+    JSR checkCollideBulletEnemy
+    LDA isCollide
+    BEQ return
     LDA soldairX
     CLC
     JSR distEnemy
 
-    STA tmpX
+    STA tempX
 
     LDA soldairY
-    STA tmpY
+    STA tempY
 
     LDA soldairDirection
     BEQ soldairWalkRight
     BNE soldairWalkLeft
 
     soldairWalkRight:
-        JSR drawSoldairWalkRight
+       JSR drawSoldairWalkRight
+       JMP continue
     soldairWalkLeft:
-        JSR drawSoldairWalkLeft
+       JSR drawSoldairWalkLeft
+
+    continue:
 
     JSR frameCounterProcEmp
     JSR frameCounterResetEmp
-
+    return:
     RTS
+.endproc
+
+.proc checkCollideBulletEnemy
+    LDX #$00
+    loopCounter:
+        LDY bulletX, x
+        CPY soldairX
+        BCS checkTwoParams
+        BCC skip
+        checkTwoParams:
+        LDA soldairX
+        CLC
+        ADC #$0A
+        STA tmpA
+        CPY tmpA
+        BCS skip
+        BCC unsetBullet
+        unsetBullet:
+            LDY #$00
+            STY isBullet, x
+            STY bulletX, x
+            STY bulletY, x
+            STY soldairX
+            STY soldairY
+            STY isCollide
+
+
+            LDA bulletCounter
+            BEQ skip
+            DEC bulletCounter
+        skip:
+            INX
+            CPX #$03
+            BNE loopCounter
+
 .endproc
 
 .proc distEnemy
@@ -83,8 +126,6 @@ adcX:
 .endproc
 
 .proc drawSoldairWalkLeft
-    ;JSR drawSoldierStay
-
     LDA frameCounterEmp
     BEQ drawFrame0
     CMP #01
@@ -105,35 +146,60 @@ drawFrame2:
     RTS
 .endproc
 
+.proc commonFrameSettings
+    LDA #<leftFrameOffsetSoldX
+    STA offsetXLB
+    LDA #>leftFrameOffsetSoldX
+    STA offsetXHB
+
+    LDA #<leftFrameOffsetSoldY
+    STA offsetYLB
+    LDA #>leftFrameOffsetSoldY
+    STA offsetYHB
+
+    LDA #<soldairMask
+    STA attributeLB
+    LDA #>soldairMask
+    STA attributeHB
+
+    LDA #$08
+    STA loopCount
+
+    RTS
+.endproc
+
 .proc drawFrame0Proc
     LDA #<empFrame0Left
-    STA soldairLB
+    STA objectLB
     LDA #>empFrame0Left
-    STA soldairHB
+    STA objectHB
 
-    JSR drawFrameSoldair
+    JSR commonFrameSettings
+    JSR drawFramePPU
 
     RTS
 .endproc
 
 .proc drawFrame1Proc
     LDA #<empFrame1Left
-    STA soldairLB
+    STA objectLB
     LDA #>empFrame1Left
-    STA soldairHB
+    STA objectHB
 
-    JSR drawFrameSoldair
+    JSR commonFrameSettings
+    JSR drawFramePPU
 
     RTS
 .endproc
 
 .proc drawFrame2Proc
     LDA #<empFrame2Left
-    STA soldairLB
+    STA objectLB
     LDA #>empFrame2Left
-    STA soldairHB
+    STA objectHB
 
-    JSR drawFrameSoldair
+    JSR commonFrameSettings
+    JSR drawFramePPU
 
     RTS
 .endproc
@@ -145,58 +211,12 @@ drawFrame2:
 
 .proc drawSoldierStay
     LDA #<empFrame0Left
-    STA soldairLB
+    STA objectLB
     LDA #>empFrame0Left
-    STA soldairHB
+    STA objectHB
 
-    JSR drawFrameSoldair
-
-    RTS
-.endproc
-
-.proc destroySoldier
-    LDX #00
-    clearLoop:
-        LDA #00
-        STA $0224, x
-        INX
-        CPY #09
-        BNE clearLoop
-    RTS
-.endproc
-
-.proc drawFrameSoldair
-    TXA
-    PHA
-    TYA
-    PHA
-
-    LDX #00
-    LDY #00
-    frameDrawLoop:
-        LDA tmpY
-        CLC
-        ADC leftFrameOffsetSoldY, y
-        STA $0224, x
-        LDA (soldairLB), y
-        INX
-        STA $0224, x
-        LDA #%01000000
-        INX
-        STA $0224, x
-        LDA tmpX
-        CLC
-        ADC leftFrameOffsetSoldX, y
-        INX
-        STA $0224, x
-        INX
-        INY
-        CPY #08
-        BNE frameDrawLoop
-    PLA
-    TAY
-    PLA
-    TAX
+    JSR commonFrameSettings
+    JSR drawFramePPU
 
     RTS
 .endproc

@@ -5,8 +5,7 @@
     loadedFlag: .res 1
     indYBack: .res 1
     indXBack: .res 1
-
-.segment "RODATA"
+    oldScroll: .res 1
 
 .segment "CODE"
 
@@ -197,7 +196,7 @@ DrawNewAttributeLoop:
     STA $2007
 
     INY
-    CPY #$08
+    CPY #$06
     BEQ DrawAttributeLoopDone
 
     LDA colLow
@@ -217,6 +216,7 @@ RTS
   
 DrawNewColumn:
     LDA scrollPosition ; позиция скрола
+
     LSR A ; смещение право
     LSR A
     LSR A ; / 8
@@ -261,7 +261,7 @@ DrawNewColumn:
     STA $2006             ; write the high byte of column address
     LDA colLow
     STA $2006             ; write the low byte of column address
-    LDX #$1E              ; copy 30 bytes
+    LDX #$1A              ; copy 1E - 30 bytes 18 - 24
     LDY #$00
 DrawColumnLoop:
     LDA (sourceLow), y
@@ -274,6 +274,9 @@ DrawColumnLoop:
     EOR nameTable ; 01 00
     STA $2000
 
+    LDA scrollPosition
+    STA oldScroll
+return:
     RTS
 .endproc
 
@@ -304,7 +307,7 @@ NewColumnCheckDone:
 
 NameTableCheckSwap:
     LDA scrollPosition
-    CMP #$FF
+    CMP #$FE
     BNE NameTableCheckSwapDone
 NameTableSwap:
     LDA nameTable

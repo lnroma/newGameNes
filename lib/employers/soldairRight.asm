@@ -1,6 +1,6 @@
 .segment "ZEROPAGE"
 
-.segment "RODATA"
+.segment "CODE"
 
 empFrame0:
     .byt $70, $71
@@ -21,22 +21,24 @@ empFrame2:
     .byt $84, $85
 
 rightFrameOffsetSoldX:
-      .byt $00, $08
-      .byt $00, $08
-      .byt $00, $08
-      .byt $00, $08
+    .byt $00, $08
+    .byt $00, $08
+    .byt $00, $08
+    .byt $00, $08
 
 rightFrameOffsetSoldY:
-      .byt $08, $08
-      .byt $10, $10
-      .byt $18, $18
-      .byt $20, $20
+    .byt $08, $08
+    .byt $10, $10
+    .byt $18, $18
+    .byt $20, $20
 
-.segment "CODE"
+soldairMaskRight:
+    .byt %00000000, %00000000
+    .byt %00000000, %00000000
+    .byt %00000000, %00000000
+    .byt %00000000, %00000000
 
 .proc drawSoldairWalkRight
-    ;JSR drawSoldierStay
-
     LDA frameCounterEmp
     BEQ drawFrame0
     CMP #01
@@ -57,35 +59,60 @@ drawFrame2:
     RTS
 .endproc
 
+.proc commonSettingSoldairRight
+    LDA #<rightFrameOffsetSoldX
+    STA offsetXLB
+    LDA #>rightFrameOffsetSoldX
+    STA offsetXHB
+
+    LDA #<rightFrameOffsetSoldY
+    STA offsetYLB
+    LDA #>rightFrameOffsetSoldY
+    STA offsetYHB
+
+    LDA #<soldairMaskRight
+    STA attributeLB
+    LDA #>soldairMaskRight
+    STA attributeHB
+
+    LDA #$08
+    STA loopCount
+
+    RTS
+.endproc
+
 .proc drawFrame0ProcRight
     LDA #<empFrame0
-    STA soldairLB
+    STA objectLB
     LDA #>empFrame0
-    STA soldairHB
+    STA objectHB
 
-    JSR drawFrameSoldairRight
+    JSR commonSettingSoldairRight
+    JSR drawFramePPU
 
     RTS
 .endproc
 
 .proc drawFrame1ProcRight
     LDA #<empFrame1
-    STA soldairLB
+    STA objectLB
     LDA #>empFrame1
-    STA soldairHB
+    STA objectHB
 
-    JSR drawFrameSoldairRight
+    JSR commonSettingSoldairRight
+    JSR drawFramePPU
 
     RTS
 .endproc
 
 .proc drawFrame2ProcRight
     LDA #<empFrame2
-    STA soldairLB
+    STA objectLB
     LDA #>empFrame2
-    STA soldairHB
+    STA objectHB
 
-    JSR drawFrameSoldairRight
+    JSR commonSettingSoldairRight
+    JSR drawFramePPU
 
     RTS
 .endproc
@@ -97,48 +124,12 @@ drawFrame2:
 
 .proc drawSoldierStayRight
     LDA #<empFrame0
-    STA soldairLB
+    STA objectLB
     LDA #>empFrame0
-    STA soldairHB
+    STA objectHB
 
-    JSR drawFrameSoldairRight
+    JSR commonSettingSoldairRight
+    JSR drawFramePPU
 
-    RTS
-.endproc
-
-.proc destroySoldierRight
-    LDX #00
-    clearLoop:
-        LDA #00
-        STA $0224, x
-        INX
-        CPY #09
-        BNE clearLoop
-    RTS
-.endproc
-
-.proc drawFrameSoldairRight
-    LDX #00
-    LDY #00
-    frameDrawLoop:
-        LDA tmpY
-        CLC
-        ADC rightFrameOffsetSoldY, y
-        STA $0224, x
-        LDA (soldairLB), y
-        INX
-        STA $0224, x
-        LDA #%00000000
-        INX
-        STA $0224, x
-        LDA tmpX
-        CLC
-        ADC rightFrameOffsetSoldX, y
-        INX
-        STA $0224, x
-        INX
-        INY
-        CPY #08
-        BNE frameDrawLoop
     RTS
 .endproc

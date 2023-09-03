@@ -28,33 +28,38 @@ stayLeftAttributes:
 .endproc
 
 .proc drawStayLeft
-    JSR drawFrameStayLeft
-    RTS
-.endproc
+    LDX #$09
+    JSR setPrgBank
 
-.proc drawFrameStayLeft
-    LDX #00
-    LDY #00
-    frameDrawLoop:
-        LDA heroYCoordinate
-        CLC
-        ADC stayLeftOffsetsY, y
-        STA $0200, x
-        LDA stayLeft, y
-        INX
-        STA $0200, x
-        LDA stayLeftAttributes, y
-        INX
-        STA $0200, x
-        LDA heroXCoordinate
-        CLC
-        ADC stayLeftOffsetsX, y
-        INX
-        STA $0200, x
-        INX
-        INY
-;        CPY #09
-        CPY #08
-        BNE frameDrawLoop
+    LDA heroYCoordinate
+    STA tempY
+
+    LDA heroXCoordinate
+    STA tempX
+
+    LDA #<stayLeftOffsetsX
+    STA offsetXLB
+    LDA #>stayLeftOffsetsX
+    STA offsetXHB
+
+    LDA #<stayLeftOffsetsY
+    STA offsetYLB
+    LDA #>stayLeftOffsetsY
+    STA offsetYHB
+
+    LDA #<stayLeftAttributes
+    STA attributeLB
+    LDA #>stayLeftAttributes
+    STA attributeHB
+
+    LDA #<stayLeft
+    STA objectLB
+    LDA #>stayLeft
+    STA objectHB
+
+    LDA #$08
+    STA loopCount
+
+    JSR drawFramePPU
     RTS
 .endproc

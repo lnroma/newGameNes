@@ -32,32 +32,38 @@ stayRightFireAttributes:
 .endproc
 
 .proc drawFireRight
-    JSR drawFrameFireRight
-    RTS
-.endproc
+    LDX #$09
+    JSR setPrgBank
 
-.proc drawFrameFireRight
-    LDX #00
-    LDY #00
-    frameDrawLoop:
-        LDA heroYCoordinate
-        CLC
-        ADC stayRightFireOffsetsY, y
-        STA $0200, x
-        LDA stayRightFire, y
-        INX
-        STA $0200, x
-        LDA stayRightFireAttributes, y
-        INX
-        STA $0200, x
-        LDA heroXCoordinate
-        CLC
-        ADC stayRightFireOffsetsX, y
-        INX
-        STA $0200, x
-        INX
-        INY
-        CPY #09
-        BNE frameDrawLoop
+    LDA heroYCoordinate
+    STA tempY
+
+    LDA heroXCoordinate
+    STA tempX
+
+    LDA #<stayRightFireOffsetsX
+    STA offsetXLB
+    LDA #>stayRightFireOffsetsX
+    STA offsetXHB
+
+    LDA #<stayRightFireOffsetsY
+    STA offsetYLB
+    LDA #>stayRightFireOffsetsY
+    STA offsetYHB
+
+    LDA #<stayRightFireAttributes
+    STA attributeLB
+    LDA #>stayRightFireAttributes
+    STA attributeHB
+
+    LDA #<stayRightFire
+    STA objectLB
+    LDA #>stayRightFire
+    STA objectHB
+
+    LDA #$09
+    STA loopCount
+
+    JSR drawFramePPU
     RTS
 .endproc

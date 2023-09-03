@@ -8,32 +8,38 @@ palette_data_stage_2:
     .incbin "sprites.pal"
 
 map_level_2:
-    .incbin "n.nam"
+    .incbin "levels/stageTwo/n.nam"
 
 map_level_2_2:
-    .incbin "t2.nam"
+    .incbin "levels/stageTwo/t2.nam"
 
 map_level_2_page_1:
-    .incbin "t3.nam"
+    .incbin "levels/stageTwo/t3.nam"
 
 map_level_2_page_2:
-    .incbin "t4.nam"
+    .incbin "levels/stageTwo/t4.nam"
+map_level_2_page_3:
+    .incbin "levels/stageTwo/t5.nam"
 
 attributeTableLevel2Page1:
-    .byt $1a, $50, $1a, $1a, $50, $1a, $1a, $50, $1a, $1a, $50, $1a, $1a, $50, $0a, $0a
-    .byt $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-    .byt $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $55, $55, $55, $55
-    .byt $50, $50, $00, $50, $55, $55, $55, $55, $05, $05, $05, $05, $05, $05, $05, $05
+    .byt $1a, $50, $1a, $1a, $50, $1a, $1a, $50
+    .byt $1a, $1a, $50, $1a, $1a, $50, $0a, $0a
+    .byt $00, $00, $00, $00, $00, $00, $00, $00
+    .byt $00, $00, $00, $00, $00, $00, $00, $00
+    .byt $00, $00, $00, $00, $00, $00, $00, $00
+    .byt $00, $00, $00, $00, $00, $00, $00, $00
+    .byt $50, $50, $00, $50, $00, $00, $00, $55
+    .byt $05, $05, $05, $05, $05, $05, $05, $05
 
 attributeTableLevel2Page2:
     .byt $00, $00, $00, $00, $00, $00, $50, $05
-    .byt $aa, $08, $00, $00, $40, $54, $50, $05
+    .byt $aa, $08, $00, $00, $00, $00, $50, $05
     .byt $02, $a2, $08, $00, $00, $00, $00, $05
     .byt $a0, $a0, $aa, $00, $00, $00, $50, $05
-    .byt $aa, $aa, $aa, $00, $00, $55, $55, $05
-    .byt $00, $af, $aa, $00, $00, $55, $55, $05
-    .byt $80, $ab, $aa, $00, $00, $55, $55, $05
-    .byt $00, $aa, $aa, $00, $00, $55, $55, $05
+    .byt $aa, $aa, $aa, $00, $00, $00, $55, $05
+    .byt $00, $af, $aa, $00, $00, $00, $55, $05
+    .byt $80, $ab, $aa, $00, $00, $00, $55, $05
+    .byt $00, $aa, $aa, $00, $00, $00, $55, $05
 
 attributeTableLevel2Page3:
     .incbin "attribute23.atr"
@@ -189,60 +195,104 @@ collisionMap1High:
 .endproc
 
 .proc stageTwoState
-;    JSR loadBackgroundAnimated
-;    JSR disableRender
+    ;LDA #$01
+    ;STA reloadStatusBar1
+
+
+    LDX #$02
+    JSR setPrgBank
+    JSR animationPalete
+    JSR scrolling
+    JSR drawNewAttribute
+    JSR scrolling
+    JSR drawNewCollumn
+    JSR scrolling
+    JSR swapNametable
+    JSR scrolling
+
     JSR animationCounterProc
     JSR resetAnimationCounter
     JSR incScrollCounter
     JSR heroStateMovement
     JSR screenFactoryTwo
-    JSR swapNametable
-;    JSR animationPalete
-;    JSR scrolling
-    JSR drawNewAttribute
-;    JSR scrolling
-    JSR drawNewCollumn
-    JSR scrolling
- ;   JSR animationPalete
-;    JSR scrolling
     JSR employerFactoryTwo
     JSR changeSpriteBuffer
+
     JSR readJoyPad
     JSR readJoyState
     JSR playerHundler
-    ; always scrolling in last this interapt
-    JSR drawAndAnimatedBullet
 
     JSR scrolling
-;    JSR enableRender
 
     RTS
 .endproc
 
+
 .proc resetStageTwo
+    LDX #$02
+    JSR setPrgBank
     ; disable render before load stage
     JSR disableRender
     ; set vertical mirror mode
-    JSR setVerticalMirror
+    JSR setHorizontalMirror
     ; change code page
-    LDA #%00000010
-    JSR setPrgBank
-    ; change chr page
-    LDA #$00
-    JSR changeChrZerro
+    JSR compileChrStageTwo
 
     JSR loadPaleteStageTwo
 
     LDX #$FC
     LDY #100
     JSR soldairInit
-
+    JSR fixScroll
     JSR loadStageTwoBackground
     JSR loadBackground
     JSR loadAttributePageStageTwo
-    JSR fixScroll
+
+    LDA #$01
+    STA reloadStatusBar1
+    STA reloadStatusBar2
+
+    JSR drawStatusBar2
+    JSR scrolling
+    JSR drawStatusBar1
+    JSR scrolling
+
     ; enable render after load stage
     JSR enableRender
+
+    RTS
+.endproc
+
+.proc compileChrStageTwo
+    LDA #$00
+    STA $8000
+    LDX #$00
+    STX $8001
+
+    LDA #$01
+    STA $8000
+    LDX #$02
+    STX $8001
+
+    LDA #$02
+    STA $8000
+    LDX #$44
+    STX $8001
+
+    LDA #$03
+    STA $8000
+    LDX #$45
+    STX $8001
+
+    LDA #$04
+    STA $8000
+    LDX #$46
+    STX $8001
+
+    LDA #$05
+    STA $8000
+    LDX #$47
+    STX $8001
 
     RTS
 .endproc
@@ -265,15 +315,12 @@ collisionMap1High:
     loadEmploers2:
         JSR moveSoldair
         JSR showSoldier
-        ;JSR destroySoldier
         RTS
 
     loadEmploers3:
-        ;JSR destroySoldier
         RTS
 
     loadEmploers4:
-        ;JSR destroySoldier
         RTS
 .endproc
 
@@ -298,6 +345,8 @@ collisionMap1High:
     CMP #02
     BEQ loadScreen3
     CMP #03
+    BEQ loadScreen4
+    CMP #04
     BEQ resetScreen
 
   loadScreen1:
@@ -330,6 +379,19 @@ collisionMap1High:
     LDX #<map_level_2_page_2
     STX lowMapByte
     LDX #>map_level_2_page_2
+    STX highMapByte
+
+    LDX #<attributeTableLevel2Page4
+    STX lAB
+    LDX #>attributeTableLevel2Page4
+    STX hAB
+
+    JMP loadScreenDone
+
+  loadScreen4:
+    LDX #<map_level_2_page_3
+    STX lowMapByte
+    LDX #>map_level_2_page_3
     STX highMapByte
 
     LDX #<attributeTableLevel2Page4
@@ -395,14 +457,11 @@ collisionMap1High:
 .endproc
 
 .proc animationPalete
-    PHA
     LDA $2002
     LDA #$3F
     STA $2006
     LDA #$0B
-;    LDA #$00
     STA $2006
-    ;LDX $2002
 
     LDA animationCounter
     CMP #$00
@@ -428,7 +487,6 @@ frame3:
 toPort:
     STA $2007
 return:
-    PLA
     RTS
 .endproc
 

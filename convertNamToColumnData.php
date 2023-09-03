@@ -1,6 +1,6 @@
 <?php
 
-$data = file_get_contents('s24.nam');
+$data = file_get_contents('l223.nam');
 $dataHex = bin2hex($data);
 $newData = '';
 

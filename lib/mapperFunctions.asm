@@ -5,15 +5,12 @@
 .endproc
 
 .proc setPrgBank
-    STA $E000
-    LSR
-    STA $E000
-    LSR
-    STA $E000
-    LSR
-    STA $E000
-    LSR
-    STA $E000
+    LDA #%00000110              ; $8000 Selection Bank = 6 (NOTE: Not HEX)
+    STA $8000
+    STX $8001           ; Select Bank LOW
+;    LDA #7              ; $A000 Selection Bank = 6 (NOTE: Not HEX)
+;    STA $8000
+;    STY $8001           ; Select Bank HIGH
 
     RTS
 .endproc
@@ -32,22 +29,24 @@
 .endproc
 
 .proc setVerticalMirror
-    JSR resetMapper
-    LDA #%00001110    ; 8KB CHR, 16KB PRG, $8000-BFFF swappable, vertical mirroring
-    JSR writeToMapper
+    LDA #$00
+    STA $A000
 
     RTS
 .endproc
 
 .proc setHorizontalMirror
-    JSR resetMapper
-    LDA #%00001111    ; 8KB CHR, 16KB PRG, $8000-BFFF swappable, vertical mirroring
-    JSR writeToMapper
+    LDA $01
+    STA $A000
 
     RTS
 .endproc
 
 .proc writeToMapper
+    LDA $00
+    STA $8001
+
+    RTS
     STA $8000         ; first data bit
     LSR A             ; shift to next bit
     STA $8000         ; second data bit
@@ -61,45 +60,9 @@
     RTS
 .endproc
 
-.proc changeChrZerro
-    STA $A000         ; first data bit
-    LSR A             ; shift to next bit
-    STA $A000         ; second data bit
-    LSR A             ; etc
-    STA $A000
-    LSR A
-    STA $A000
-    LSR A
-    STA $A000         ; config bits written here, takes effect immediately
+.proc switchChr
+    STA $8000
+    STX $8001
 
     RTS
 .endproc
-
-.proc changeChrFirst
-    STA $C000         ; first data bit
-    LSR A             ; shift to next bit
-    STA $C000         ; second data bit
-    LSR A             ; etc
-    STA $C000
-    LSR A
-    STA $C000
-    LSR A
-    STA $C000         ; config bits written here, takes effect immediately
-
-    RTS
-.endproc
-
-.proc changePrgBank
-    STA $C000         ; first data bit
-    LSR A             ; shift to next bit
-    STA $C000         ; second data bit
-    LSR A             ; etc
-    STA $C000
-    LSR A
-    STA $C000
-    LSR A
-    STA $C000
-
-    RTS
-.endproc
-

@@ -5,6 +5,8 @@
 .segment "CODE"
 
 .proc soldairInit
+    LDA #$01
+    STA isCollide
     TXA
     STA soldairX
     STA soldairDirection
