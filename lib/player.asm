@@ -2,6 +2,7 @@
     isFireStay: .res 1
     tmpA: .res 1
     flagButtonBPress: .res 1
+    tileIndex: .res 1
 
 .segment "CODE"
 
@@ -106,20 +107,35 @@ return:
 .endproc
 
 .proc checkCollide
-    LDA lastPositionY
-    CMP heroYCoordinate
-    BNE incrementY
-    BEQ continue
-    incrementY:
-      ;JSR playerGravity
-;      INC heroYCoordinate
-      RTS
-    continue:
-      LDA #00
-      STA isGravity
-      STA jumpHeight
-      STA isJump
-      RTS
+    LDA #%10000100
+    EOR nameTable
+    STA $2000
+
+    LDA $2002
+    LDA #$20
+    STA $2006
+    LDA #$00
+    STA $2006
+
+    STA $2005
+    STA $2005
+
+    LDA #%10010000
+    EOR nameTable ; 01 00
+    STA $2000
+
+
+
+        RTS
+
+    LDA $2007
+    STA tileIndex
+
+    JSR scrolling
+    LDA #%00001010
+    STA $2001
+
+    RTS
 .endproc
 
 .proc readJoyState

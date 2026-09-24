@@ -195,14 +195,14 @@ collisionMap1High:
 .endproc
 
 .proc stageTwoState
-    ;LDA #$01
-    ;STA reloadStatusBar1
-
-
     LDX #$02
     JSR setPrgBank
-    JSR animationPalete
+;    JSR animationPalete
+;    JSR scrolling
+
+    JSR checkCollide
     JSR scrolling
+    
     JSR drawNewAttribute
     JSR scrolling
     JSR drawNewCollumn
